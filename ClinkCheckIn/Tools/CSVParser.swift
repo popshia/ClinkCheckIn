@@ -33,7 +33,6 @@ class CSVParser {
 
             let id = row[3].trimmingCharacters(in: .whitespaces)
             let name = row[4].trimmingCharacters(in: .whitespaces)
-            let attendAlone = row[1].trimmingCharacters(in: .whitespaces)
             let relative = row[2].trimmingCharacters(in: .whitespaces)
             let count = Int(row[0].trimmingCharacters(in: .whitespaces)) ?? 1
 
@@ -47,18 +46,16 @@ class CSVParser {
             if let employee = existing {
                 // Optional: merge relatives
                 if !relative.isEmpty {
-                    if !employee.relatives.contains(relative) {
-                        employee.relatives.append(relative)
-                    }
+                    employee.relatives[relative, default: 0] += 1
                 }
                 employee.count = max(employee.count, count)
             } else {
                 // 3. Insert new record
+                let initialRelatives = !relative.isEmpty ? [relative: 1] : [:]
                 let newRecord = Employee(
                     id: id,
                     name: name,
-                    attendAlone: attendAlone,
-                    relatives: [relative],
+                    relatives: initialRelatives,
                     count: count
                 )
                 database.insert(newRecord)

@@ -13,24 +13,26 @@ struct RecordDetailView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Record Details")
-                .font(.title2)
+            Spacer()
+            Text("參加人資訊")
+                .font(.title)
                 .fontWeight(.semibold)
 
             Divider()
 
-            DetailRow(label: "ID", value: record.id)
-            DetailRow(label: "Name", value: record.name)
-            DetailRow(label: "Count", value: String(record.count))
+            DetailRow(label: "員工編號", value: record.id)
+            DetailRow(label: "員工名稱", value: record.name)
+            DetailRow(label: "總參加人數", value: String(record.count))
             DetailRow(
-                label: "Relatives",
-                value: record.relatives.filter { $0 != "本人" }.joined(
-                    separator: ", "
-                )
+                label: "攜帶親屬",
+                value: record.relatives
+                    .filter { $0.key != "本人" }
+                    .map { "\($0.key) * \($0.value)" }
+                    .joined(separator: ", ")
             )
-            
+
             Toggle(isOn: $record.checkIn) {
-                Text("Checked In")
+                Text("已報到").font(.title2)
             }
 
             Spacer()
@@ -51,10 +53,10 @@ struct DetailRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
-                .font(.caption)
+                .font(.title3)
                 .foregroundStyle(.secondary)
             Text(value)
-                .font(.body)
+                .font(.title2)
                 .textSelection(.enabled)
         }
     }

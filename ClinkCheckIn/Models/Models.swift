@@ -14,21 +14,20 @@ final class Employee {
     var id: String
 
     var name: String
-    var relatives: [String]
+    var relatives: [String: Int]
     var count: Int
     var checkIn: Bool
 
     init(
         id: String,
         name: String,
-        attendAlone: String,
-        relatives: [String],
+        relatives: [String: Int],
         count: Int
     ) {
         self.id = id
         self.name = name
         self.relatives = relatives
-        self.count = 0
+        self.count = count
         self.checkIn = false
     }
 }
