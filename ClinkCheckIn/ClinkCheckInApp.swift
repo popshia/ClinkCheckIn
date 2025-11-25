@@ -11,7 +11,7 @@ import SwiftUI
 @main
 struct ClinkCheckInApp: App {
     var body: some Scene {
-        WindowGroup {
+        Window("ClinkCheckIn", id: "mainWindow") {
             ContentView()
         }
         .modelContainer(for: Employee.self)

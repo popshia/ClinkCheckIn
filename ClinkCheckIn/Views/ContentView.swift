@@ -41,24 +41,27 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(maxWidth: .infinity)
-
-                Divider()
-
-                Button("Import CSV") {
-                    isImporting = true
-                }
-                .buttonStyle(.borderedProminent)
             }
             .padding()
             .toolbar {
                 ToolbarItem(placement: .automatic) {
-                    Button(role: .destructive) {
-                        showingClearConfirmation = true
-                    } label: {
-                        Image(systemName: "trash")
-                            .foregroundStyle(.red)
+                    HStack {
+                        Button {
+                            isImporting = true
+                        } label: {
+                            Image(systemName: "square.and.arrow.down")
+                            Text("Import")
+                        }
+                        Button(role: .destructive) {
+                            showingClearConfirmation = true
+                        } label: {
+                            Image(systemName: "trash")
+                                .foregroundStyle(.red)
+                            Text("Clear Database")
+                                .foregroundStyle(.red)
+                        }
+                        .disabled(records.isEmpty)
                     }
-                    .disabled(records.isEmpty)
                 }
             }
             .frame(minWidth: 200)
