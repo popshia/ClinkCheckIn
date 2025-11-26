@@ -8,9 +8,16 @@
 import SwiftData
 import SwiftUI
 
+/// A view that displays the detailed information of a selected employee record.
 struct RecordDetailView: View {
+    
+    // MARK: - Properties
+    
+    /// The employee record being displayed and edited.
     @Bindable var record: Employee
 
+    // MARK: - Main
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Spacer()
@@ -46,10 +53,18 @@ struct RecordDetailView: View {
     }
 }
 
+/// A helper view to display a label-value pair in the detail view.
 struct DetailRow: View {
+    
+    // MARK: - Properties
+    
+    /// The descriptive label for the row.
     let label: String
+    /// The value to be displayed in the row.
     let value: String
 
+    // MARK: - Main
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)

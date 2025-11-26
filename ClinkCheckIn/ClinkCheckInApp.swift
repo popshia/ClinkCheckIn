@@ -10,6 +10,9 @@ import SwiftUI
 
 @main
 struct ClinkCheckInApp: App {
+    
+    // MARK: - Scene
+    
     var body: some Scene {
         Window("C-LINK Check In", id: "mainWindow") {
             ContentView()

@@ -9,6 +9,16 @@ import Foundation
 import SwiftData
 
 class CSVParser {
+    
+    // MARK: - Functions
+    
+    /**
+     Parses a CSV file and returns its content as an array of string arrays.
+
+     - Parameter url: The URL of the CSV file to parse.
+     - Throws: An error if the file cannot be read.
+     - Returns: An array of arrays, where each inner array represents a row in the CSV file.
+     */
     static func parse(url: URL) throws -> [[String]] {
         let content = try String(contentsOf: url, encoding: .utf8)
         let rows = content.components(separatedBy: .newlines)
@@ -22,6 +32,17 @@ class CSVParser {
         return result
     }
 
+    /**
+     Imports data from a CSV file into the SwiftData database.
+
+     This function parses a CSV file, then iterates over its rows to create or update `Employee` records.
+     It handles duplicates by checking for existing employee IDs and merges relative information.
+
+     - Parameters:
+        - url: The URL of the CSV file to import.
+        - database: The `ModelContext` for database operations.
+     - Throws: An error if the file cannot be parsed or if there's an issue with database operations.
+     */
     static func importToDatabase(url: URL, database: ModelContext) throws {
         let data = try parse(url: url)
 

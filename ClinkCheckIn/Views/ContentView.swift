@@ -5,31 +5,39 @@
 //  Created by Noah on 2025/11/25.
 //
 
-//
-//  ContentView.swift
-//  ClinkCheckIn
-//
-//  Created by Noah on 2025/11/25.
-//
-
 import SwiftData
 import SwiftUI
 internal import UniformTypeIdentifiers
 
+/// The main content view of the application, responsible for displaying employee records,
+/// handling search functionality, and managing data import/export.
 struct ContentView: View {
+    
+    // MARK: - Properties
+    
+    /// The model context for SwiftData operations, injected from the environment.
     @Environment(\.modelContext) private var modelContext
+    /// A query to fetch all employee records from the database.
     @Query private var records: [Employee]
 
+    /// The text entered by the user in the search bar.
     @State private var searchText = ""
+    /// The results of the employee search.
     @State private var searchResults: [Employee] = []
+    /// A boolean indicating whether the file importer is currently presented.
     @State private var isImporting = false
+    /// A boolean indicating whether the confirmation alert for clearing data is presented.
     @State private var showingClearConfirmation = false
+    /// The currently selected employee record in the sidebar.
     @State private var selectedRecord: Employee?
 
+    /// A computed property that returns the employee records sorted by name.
     private var sortedRecords: [Employee] {
         records.sorted { $0.name < $1.name }
     }
-
+    
+    // MARK: - Main
+    
     var body: some View {
         NavigationSplitView {
             // Sidebar - optional, can show statistics or controls
@@ -82,7 +90,7 @@ struct ContentView: View {
                         }
                         .padding(8)
                     }
-                    .buttonStyle(.plain)  // Prevent default bordered style
+                    .buttonStyle(.plain) // Prevent default bordered style
                     .glassEffect(
                         .regular.tint(.blue).interactive(),
                         in: RoundedRectangle(cornerRadius: 12)
@@ -147,7 +155,15 @@ struct ContentView: View {
             )
         }
     }
+    
+    // MARK: - Functions
 
+    /**
+     Performs a search for employees based on the `searchText`.
+     
+     This function filters the `records` array to find employees whose ID or name contains the search text.
+     The results are stored in the `searchResults` state variable.
+     */
     private func performSearch() {
         selectedRecord = nil
         searchResults = records.filter { record in
@@ -155,6 +171,13 @@ struct ContentView: View {
         }
     }
 
+    /**
+     Handles the result of a file import operation.
+     
+     This function is called when the user selects a file using the file importer. It attempts to parse the selected CSV file and import its data into the database.
+     
+     - Parameter result: A `Result` containing either an array of URLs to the selected files or an error.
+     */
     private func handleFileImport(result: Result<[URL], Error>) {
         do {
             guard let url = try result.get().first else { return }
@@ -176,6 +199,7 @@ struct ContentView: View {
         }
     }
 
+    /// Clears all employee data from the database.
     private func clearAllData() {
         // Delete all records from the database
         for record in records {
@@ -194,10 +218,18 @@ struct ContentView: View {
     }
 }
 
+/// A view that displays a single row for an employee record in the list.
 struct RecordRowView: View {
+    
+    // MARK: - Properties
+    
+    /// The employee record to display.
     let record: Employee
+    /// A boolean indicating whether this record row is currently selected.
     let isSelected: Bool
 
+    // MARK: - Main
+    
     var body: some View {
         HStack {
             Text(record.name)

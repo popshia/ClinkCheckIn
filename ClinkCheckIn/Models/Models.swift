@@ -10,14 +10,24 @@ import SwiftData
 
 @Model
 final class Employee {
+    
+    // MARK: - Properties
+    
+    /// Unique identifier for the employee.
     @Attribute(.unique)
     var id: String
 
+    /// The name of the employee.
     var name: String
+    /// A dictionary storing relatives associated with the employee, where the key is the relative's name and the value is their count.
     var relatives: [String: Int]
+    /// A count associated with the employee, potentially representing the total number of people including the employee and their relatives.
     var count: Int
+    /// A boolean flag indicating whether the employee has checked in.
     var checkIn: Bool
 
+    // MARK: - Initializer
+    
     init(
         id: String,
         name: String,
