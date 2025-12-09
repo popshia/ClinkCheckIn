@@ -4,45 +4,69 @@
 //
 //  Created by Noah on 2025/11/25.
 //
+//  This file defines the detail view for a single employee record, showing
+//  all associated information and allowing for check-in status updates.
+//
 
 import SwiftData
 import SwiftUI
 
 /// A view that displays the detailed information of a selected employee record.
 struct RecordDetailView: View {
-    
+
     // MARK: - Properties
-    
-    /// The employee record being displayed and edited.
+
+    /// The employee record being displayed and edited, bound to the view for live updates.
     @Bindable var record: Employee
 
-    // MARK: - Main
-    
+    // MARK: - View Body
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Spacer()
+            Divider()
             Text("參加人資訊")
                 .font(.title)
                 .fontWeight(.semibold)
-
-            Divider()
-
             DetailRow(label: "員工編號", value: record.id)
             DetailRow(label: "員工名稱", value: record.name)
             DetailRow(label: "總參加人數", value: String(record.count))
-            DetailRow(
-                label: "攜帶親屬",
-                value: record.relatives
-                    .filter { $0.key != "本人" }
-                    .map { "\($0.key) * \($0.value)" }
-                    .joined(separator: ", ")
-            )
+            
+            // Section for displaying relatives and their check-in status.
+            VStack(alignment: .leading, spacing: 4) {
+                Text("攜帶親屬")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+                if record.relatives.isEmpty {
+                    Text("無")
+                        .font(.title2)
+                } else {
+                    // Separate the "本人" (self) relative from others for special handling.
+                    let selfRelativeBinding = $record.relatives.filter {
+                        $0.name.wrappedValue == "本人"
+                    }
+                    // Filter and sort the remaining relatives alphabetically.
+                    let otherRelativesBindings = $record.relatives.filter {
+                        $0.name.wrappedValue != "本人"
+                    }
+                    .sorted { $0.name.wrappedValue < $1.name.wrappedValue }
 
-            Toggle(isOn: $record.checkIn) {
-                Text("已報到").font(.title2)
+                    // Display the "本人" toggle first if they exist in the relatives list.
+                    ForEach(selfRelativeBinding) { $selves in
+                        Toggle(isOn: $selves.checkIn) {
+                            Text($selves.name.wrappedValue)
+                                .font(.title2)
+                        }
+                    }
+
+                    // Display toggles for all other relatives.
+                    ForEach(otherRelativesBindings) { $relative in
+                        Toggle(isOn: $relative.checkIn) {
+                            Text($relative.name.wrappedValue)
+                                .font(.title2)
+                        }
+                    }
+                }
             }
-
-            Spacer()
         }
         .padding()
         .frame(
@@ -53,18 +77,18 @@ struct RecordDetailView: View {
     }
 }
 
-/// A helper view to display a label-value pair in the detail view.
+/// A helper view to display a label-value pair in a standardized format.
 struct DetailRow: View {
-    
+
     // MARK: - Properties
-    
-    /// The descriptive label for the row.
+
+    /// The descriptive label for the data being displayed.
     let label: String
-    /// The value to be displayed in the row.
+    /// The string value to be displayed.
     let value: String
 
-    // MARK: - Main
-    
+    // MARK: - View Body
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)

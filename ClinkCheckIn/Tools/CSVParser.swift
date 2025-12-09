@@ -4,19 +4,22 @@
 //
 //  Created by Noah on 2025/11/25.
 //
+//  This file provides a utility for parsing CSV files and importing the data
+//  into the SwiftData database for the ClinkCheckIn application.
+//
 
 import Foundation
 import SwiftData
 
+/// A utility class for handling CSV data parsing and importing.
 class CSVParser {
     
-    // MARK: - Functions
+    // MARK: - Static Functions
     
     /**
-     Parses a CSV file and returns its content as an array of string arrays.
-
+     Parses a CSV file from a given URL into a two-dimensional array of strings.
      - Parameter url: The URL of the CSV file to parse.
-     - Throws: An error if the file cannot be read.
+     - Throws: An error if the file content cannot be read.
      - Returns: An array of arrays, where each inner array represents a row in the CSV file.
      */
     static func parse(url: URL) throws -> [[String]] {
@@ -33,20 +36,20 @@ class CSVParser {
     }
 
     /**
-     Imports data from a CSV file into the SwiftData database.
+     Imports employee data from a CSV file into the SwiftData database.
 
-     This function parses a CSV file, then iterates over its rows to create or update `Employee` records.
-     It handles duplicates by checking for existing employee IDs and merges relative information.
-
+     This function parses a CSV file and iterates over its rows to create new `Employee` records
+     or update existing ones. It handles duplicates by checking for existing employee IDs and
+     appends new relatives to existing records.
      - Parameters:
         - url: The URL of the CSV file to import.
-        - database: The `ModelContext` for database operations.
+        - database: The `ModelContext` used for database operations.
      - Throws: An error if the file cannot be parsed or if there's an issue with database operations.
      */
     static func importToDatabase(url: URL, database: ModelContext) throws {
         let data = try parse(url: url)
 
-        // Skip header row if present
+        // Skip header row if present, as it contains titles not data.
         let dataRows = data.dropFirst()
 
         for row in dataRows {
@@ -57,7 +60,7 @@ class CSVParser {
             let relative = row[2].trimmingCharacters(in: .whitespaces)
             let count = Int(row[0].trimmingCharacters(in: .whitespaces)) ?? 1
 
-            // 1. Try to fetch an existing record
+            // Create a fetch descriptor to find an existing employee with the same ID.
             let descriptor = FetchDescriptor<Employee>(
                 predicate: #Predicate { $0.id == id }
             )
@@ -65,14 +68,19 @@ class CSVParser {
             let existing = try database.fetch(descriptor).first
 
             if let employee = existing {
-                // Optional: merge relatives
+                // If the employee already exists, merge new relative information.
                 if !relative.isEmpty {
-                    employee.relatives[relative, default: 0] += 1
+                    let newRelative = Relative(name: relative)
+                    employee.relatives.append(newRelative)
                 }
+                // Ensure the count reflects the maximum specified value.
                 employee.count = max(employee.count, count)
             } else {
-                // 3. Insert new record
-                let initialRelatives = !relative.isEmpty ? [relative: 1] : [:]
+                // If the employee does not exist, create a new record.
+                var initialRelatives: [Relative] = []
+                if !relative.isEmpty {
+                    initialRelatives.append(Relative(name: relative))
+                }
                 let newRecord = Employee(
                     id: id,
                     name: name,
@@ -82,6 +90,7 @@ class CSVParser {
                 database.insert(newRecord)
             }
         }
+        // Save all changes to the database context.
         try database.save()
     }
 }

@@ -4,43 +4,59 @@
 //
 //  Created by Noah on 2025/11/25.
 //
+//  This file defines the main user interface for the ClinkCheckIn application.
+//  It features a three-pane layout using NavigationSplitView to display a list
+//  of all employees, a central search and detail area, and a check-in history.
+//
 
 import SwiftData
 import SwiftUI
 internal import UniformTypeIdentifiers
 
-/// The main content view of the application, responsible for displaying employee records,
-/// handling search functionality, and managing data import/export.
+/// The main view of the application, responsible for displaying employee records,
+/// handling search, and managing data import/export.
 struct ContentView: View {
 
-    // MARK: - Properties
+    // MARK: - Core Data Properties
 
     /// The model context for SwiftData operations, injected from the environment.
     @Environment(\.modelContext) private var modelContext
-    /// A query to fetch all employee records from the database.
+    /// A query to fetch all employee records from the database, kept up-to-date automatically.
     @Query private var records: [Employee]
+
+    // MARK: - State Properties
 
     /// The text entered by the user in the search bar.
     @State private var searchText = ""
-    /// The results of the employee search.
+    /// A boolean to control the visibility of the search suggestion dropdown.
+    @State private var showSuggestions = false
+    /// The index of the currently highlighted suggestion in the search results.
+    @State private var highlightedIndex: Int = 0
+    /// A focus state to manage whether the search text field is active.
+    @FocusState private var isSearchFieldFocused: Bool
+    /// The results of the most recent employee search.
     @State private var searchResults: [Employee] = []
-    /// A boolean indicating whether the file importer is currently presented.
+    /// A boolean indicating whether the file importer sheet is currently presented.
     @State private var isImporting = false
     /// A boolean indicating whether the confirmation alert for clearing data is presented.
     @State private var showingClearConfirmation = false
-    /// The currently selected employee record in the sidebar.
+    /// The currently selected employee record, which drives the detail view.
     @State private var selectedRecord: Employee?
+    /// A history of employees who have been checked in.
+    @State private var searchHistory: [Employee] = []
 
-    /// A computed property that returns the employee records sorted by name.
+    // MARK: - Computed Properties
+
+    /// A computed property that returns the employee records sorted alphabetically by name.
     private var sortedRecords: [Employee] {
         records.sorted { $0.name < $1.name }
     }
 
-    // MARK: - Main
+    // MARK: - View Body
 
     var body: some View {
         NavigationSplitView {
-            // Sidebar - optional, can show statistics or controls
+            // MARK: Sidebar (List of all employees)
             VStack(alignment: .leading, spacing: 12) {
                 Text("總參加人數: \(records.count)")
                     .font(.system(size: 14))
@@ -49,6 +65,7 @@ struct ContentView: View {
                         ForEach(sortedRecords) { record in
                             Button {
                                 selectedRecord = record
+                                searchHistory.insert(record, at: 0)
                             } label: {
                                 RecordRowView(
                                     record: record,
@@ -66,43 +83,141 @@ struct ContentView: View {
             .padding()
             .frame(minWidth: 200)
         } content: {
-            // Content - Search interface
+            // MARK: Content (Search and Detail View)
             VStack(spacing: 20) {
                 Spacer()
                 Text("C-LINK 尾牙報到")
                     .font(.system(size: 40))
                     .fontWeight(.semibold)
                 VStack {
-                    TextField("輸入員工編號或員工姓名進行查詢", text: $searchText)
-                        .font(.system(size: 24))
-                        .textFieldStyle(.roundedBorder)
-                        .frame(maxWidth: 400)
-                        .padding()
-                        .onSubmit {
-                            performSearch()
+                    ZStack(alignment: .top) {
+                        // Search text field
+                        TextField("輸入員工編號或員工姓名進行查詢", text: $searchText)
+                            .font(.system(size: 24))
+                            .textFieldStyle(.roundedBorder)
+                            .frame(maxWidth: 400)
+                            .focused($isSearchFieldFocused)
+                            .onChange(of: searchText) { _, _ in
+                                highlightedIndex = 0 // Reset highlight when text changes
+                            }
+                            .onSubmit {
+                                let suggestions = filteredSuggestions()
+                                guard !suggestions.isEmpty else { return }
+                                let selected = suggestions[highlightedIndex]
+                                selectSuggestion(selected)
+                                isSearchFieldFocused = false
+                            }
+                            // Handle up/down arrow key presses to navigate suggestions
+                            .onMoveCommand { direction in
+                                let suggestions = filteredSuggestions()
+                                guard !suggestions.isEmpty else { return }
+
+                                switch direction {
+                                case .down:
+                                    highlightedIndex = min(
+                                        highlightedIndex + 1, suggestions.count - 1)
+                                case .up:
+                                    highlightedIndex = max(highlightedIndex - 1, 0)
+                                default:
+                                    break
+                                }
+                            }
+
+                        // Search suggestions dropdown
+                        if isSearchFieldFocused && !filteredSuggestions().isEmpty {
+                            ScrollViewReader { proxy in
+                                ScrollView {
+                                    VStack(spacing: 0) {
+                                        ForEach(
+                                            Array(filteredSuggestions().enumerated()),
+                                            id: \.element.id
+                                        ) { index, record in
+                                            Button {
+                                                selectSuggestion(record)
+                                                isSearchFieldFocused = false
+                                            } label: {
+                                                suggestionRow(
+                                                    record: record,
+                                                    isHighlighted: index == highlightedIndex
+                                                )
+                                            }
+                                            .id(index)
+                                            .buttonStyle(.plain)
+                                        }
+                                    }
+                                }
+                                // Auto-scroll to the highlighted suggestion
+                                .onChange(of: highlightedIndex) { _, newValue in
+                                    withAnimation(.easeOut(duration: 0.15)) {
+                                        proxy.scrollTo(newValue, anchor: .center)
+                                    }
+                                }
+                                .frame(maxHeight: 240)
+                                .background(.ultraThinMaterial)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .shadow(radius: 6)
+                                .frame(maxWidth: 400)
+                                .offset(y: 52)
+                            }
                         }
+                    }
+                    .padding()
+                }
+                
+                // Display the detail view for the selected record
+                if let record = selectedRecord {
+                    RecordDetailView(record: record)
+                } else if !searchResults.isEmpty {
+                    RecordDetailView(record: searchResults[0])
                 }
                 Spacer()
             }
+            .onDisappear {
+                showSuggestions = false
+            }
             .padding()
             .frame(minWidth: 400)
-
         } detail: {
-            // Detail - Search results
-            if let record = selectedRecord {
-                RecordDetailView(record: record)
-            } else if !searchResults.isEmpty {
-                RecordDetailView(record: searchResults[0])
-            } else {
-                VStack {
-                    Text("請先於左方查詢出席資訊")
-                        .font(.system(size: 32))
-                        .foregroundStyle(.secondary)
+            // MARK: Detail (Check-in History)
+            VStack(alignment: .leading) {
+                if searchHistory.isEmpty {
+                    VStack {
+                        Text("無報到紀錄")
+                            .font(.system(size: 32))
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollViewReader { proxy in
+                        List {
+                            ForEach(Array(searchHistory.enumerated()), id: \.element.id) {
+                                index, record in
+                                Button {
+                                    selectedRecord = record
+                                } label: {
+                                    CheckInListView(
+                                        record: record,
+                                        isSelected: selectedRecord == record
+                                    )
+                                    .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
+                                .id(index) // Assign unique ID for scrolling
+                            }
+                        }
+                        // Scroll to the top when a new item is added to the history
+                        .onChange(of: searchHistory.count) { _ in
+                            if !searchHistory.isEmpty {
+                                proxy.scrollTo(0, anchor: .top)
+                            }
+                        }
+                    }
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            .padding()
         }
         .toolbar {
+            // Toolbar items for clearing data and importing a CSV file.
             ToolbarItem(placement: .automatic) {
                 Button(role: .destructive) {
                     showingClearConfirmation = true
@@ -141,33 +256,123 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Functions
+    // MARK: - Helper Functions
 
     /**
-     Performs a search for employees based on the `searchText`.
-
-     This function filters the `records` array to find employees whose ID or name contains the search text.
-     The results are stored in the `searchResults` state variable.
+     Performs a search based on the `searchText` against employee names and IDs.
+     
+     This function filters the main `records` array and updates the `searchHistory`
+     with the found records, placing the most recent at the top. The first result
+     is automatically selected.
      */
     private func performSearch() {
-        selectedRecord = nil
-        searchResults = records.filter { record in
+        let filteredRecords = records.filter { record in
             record.id.contains(searchText) || record.name.contains(searchText)
+        }
+
+        // Add unique found records to search history, putting the most recent at the top.
+        for record in filteredRecords {
+            if let index = searchHistory.firstIndex(where: { $0.id == record.id }) {
+                searchHistory.remove(at: index) // Remove if already exists to re-add at top.
+            }
+            searchHistory.insert(record, at: 0)
+        }
+
+        selectedRecord = filteredRecords.first
+    }
+
+    /**
+     Filters the available records to generate a list of search suggestions.
+     - Returns: An array of `Employee` records that match the current `searchText`.
+     */
+    private func filteredSuggestions() -> [Employee] {
+        guard !searchText.isEmpty else { return [] }
+        return records.filter {
+            $0.id.localizedCaseInsensitiveContains(searchText)
+                || $0.name.localizedCaseInsensitiveContains(searchText)
         }
     }
 
     /**
-     Handles the result of a file import operation.
+     Handles the selection of an employee from the suggestion list.
+     
+     This function updates the UI, assigns a sequential `checkInID` if one doesn't exist,
+     marks all relatives as checked in, and updates the search history.
+     - Parameter record: The `Employee` record that was selected.
+     */
+    private func selectSuggestion(_ record: Employee) {
+        searchText = record.name
+        selectedRecord = record
+        showSuggestions = false
 
-     This function is called when the user selects a file using the file importer. It attempts to parse the selected CSV file and import its data into the database.
+        // Assign a sequential check-in ID if the employee doesn't have one yet.
+        if record.checkInID == nil {
+            let maxID = records.compactMap { $0.checkInID }.max() ?? 0
+            print(maxID)
+            record.checkInID = maxID + 1
+        }
 
-     - Parameter result: A `Result` containing either an array of URLs to the selected files or an error.
+        // Mark all relatives as checked in for the selected employee.
+        for relative in record.relatives {
+            relative.checkIn = true
+        }
+
+        // Ensure the selected record is at the top of the search history.
+        if let index = searchHistory.firstIndex(where: { $0.id == record.id }) {
+            searchHistory.remove(at: index)
+        }
+        searchHistory.insert(record, at: 0)
+    }
+
+    /**
+     Builds a single suggestion row view.
+     - Parameters:
+        - record: The `Employee` record to display in the row.
+        - isHighlighted: A boolean indicating if the row is currently highlighted.
+     - Returns: A view representing the suggestion row.
+     */
+    @ViewBuilder
+    private func suggestionRow(record: Employee, isHighlighted: Bool) -> some View {
+        HStack {
+            highlightedText(text: "\(record.id) • \(record.name)")
+                .font(.system(size: 18))
+            Spacer()
+        }
+        .padding(8)
+        .background(isHighlighted ? Color.accentColor.opacity(0.15) : Color.clear)
+    }
+
+    /**
+     Generates a `Text` view with the search term highlighted in bold.
+     - Parameter text: The string to be displayed.
+     - Returns: A `Text` view with the `searchText` portion bolded.
+     */
+    private func highlightedText(text: String) -> Text {
+        guard !searchText.isEmpty,
+            let range = text.lowercased().range(of: searchText.lowercased())
+        else {
+            return Text(text)
+        }
+
+        let prefix = String(text[..<range.lowerBound])
+        let match = String(text[range])
+        let suffix = String(text[range.upperBound...])
+
+        return Text(prefix) + Text(match).bold() + Text(suffix)
+    }
+
+    /**
+     Handles the result of a file import operation from the `.fileImporter`.
+     
+     It retrieves the URL of the selected CSV file, ensures secure access to it,
+     and triggers the `CSVParser` to import the data into the database.
+     - Parameter result: A `Result` containing either an array of URLs or an error.
      */
     private func handleFileImport(result: Result<[URL], Error>) {
         do {
             guard let url = try result.get().first else { return }
 
-            // Security-scoped resource access
+            // Gain secure access to the file chosen by the user.
             guard url.startAccessingSecurityScopedResource() else {
                 print("Failed to access file")
                 return
@@ -184,18 +389,19 @@ struct ContentView: View {
         }
     }
 
-    /// Clears all employee data from the database.
+    /// Clears all employee and related data from the SwiftData database.
     private func clearAllData() {
-        // Delete all records from the database
+        // Delete all records from the database.
         for record in records {
             modelContext.delete(record)
         }
 
         do {
             try modelContext.save()
-            // Clear search results as well
+            // Clear local state variables as well.
             searchResults = []
             searchText = ""
+            searchHistory = []
             print("Successfully cleared all data")
         } catch {
             print("Error clearing data: \(error.localizedDescription)")
@@ -203,34 +409,7 @@ struct ContentView: View {
     }
 }
 
-/// A view that displays a single row for an employee record in the list.
-struct RecordRowView: View {
-
-    // MARK: - Properties
-
-    /// The employee record to display.
-    let record: Employee
-    /// A boolean indicating whether this record row is currently selected.
-    let isSelected: Bool
-
-    // MARK: - Main
-
-    var body: some View {
-        HStack {
-            Text(record.name)
-                .foregroundStyle(
-                    record.checkIn
-                        ? .green
-                        : .primary
-                )
-                .font(.system(size: 20))
-                .padding(4)
-            Spacer()
-        }
-        .background(isSelected ? Color.gray.opacity(0.2) : Color.clear)
-        .cornerRadius(5)
-    }
-}
+// MARK: - Preview
 
 #Preview {
     ContentView()
