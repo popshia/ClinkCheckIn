@@ -30,7 +30,7 @@ struct RecordDetailView: View {
             DetailRow(label: "員工編號", value: record.id)
             DetailRow(label: "員工名稱", value: record.name)
             DetailRow(label: "總參加人數", value: String(record.count))
-            
+
             // Section for displaying relatives and their check-in status.
             VStack(alignment: .leading, spacing: 4) {
                 Text("攜帶親屬")

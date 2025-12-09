@@ -13,9 +13,9 @@ import SwiftData
 
 /// A utility class for handling CSV data parsing and importing.
 class CSVParser {
-    
+
     // MARK: - Static Functions
-    
+
     /**
      Parses a CSV file from a given URL into a two-dimensional array of strings.
      - Parameter url: The URL of the CSV file to parse.
@@ -37,7 +37,7 @@ class CSVParser {
 
     /**
      Imports employee data from a CSV file into the SwiftData database.
-
+    
      This function parses a CSV file and iterates over its rows to create new `Employee` records
      or update existing ones. It handles duplicates by checking for existing employee IDs and
      appends new relatives to existing records.

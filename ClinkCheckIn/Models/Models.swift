@@ -14,9 +14,9 @@ import SwiftData
 /// Represents a relative associated with an employee.
 @Model
 final class Relative {
-    
+
     // MARK: - Properties
-    
+
     /// The name of the relative.
     var name: String
     /// A boolean flag indicating whether the relative has checked in.

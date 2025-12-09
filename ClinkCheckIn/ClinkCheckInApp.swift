@@ -14,12 +14,12 @@ import SwiftUI
 /// The main structure that defines the application and its scenes.
 @main
 struct ClinkCheckInApp: App {
-    
+
     // MARK: - Scene Definition
-    
+
     var body: some Scene {
         // Defines the main window of the application.
-        Window("C-LINK Check In", id: "mainWindow") {
+        Window("C-LINK 尾牙報到", id: "mainWindow") {
             ContentView()
         }
         // Configures the SwiftData model container for the `Employee` entity,

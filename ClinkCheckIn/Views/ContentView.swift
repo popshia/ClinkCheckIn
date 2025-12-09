@@ -65,7 +65,7 @@ struct ContentView: View {
                         ForEach(sortedRecords) { record in
                             Button {
                                 selectedRecord = record
-                                searchHistory.insert(record, at: 0)
+                                // searchHistory.insert(record, at: 0)
                             } label: {
                                 RecordRowView(
                                     record: record,
@@ -86,9 +86,6 @@ struct ContentView: View {
             // MARK: Content (Search and Detail View)
             VStack(spacing: 20) {
                 Spacer()
-                Text("C-LINK 尾牙報到")
-                    .font(.system(size: 40))
-                    .fontWeight(.semibold)
                 VStack {
                     ZStack(alignment: .top) {
                         // Search text field
@@ -163,7 +160,7 @@ struct ContentView: View {
                     }
                     .padding()
                 }
-                
+
                 // Display the detail view for the selected record
                 if let record = selectedRecord {
                     RecordDetailView(record: record)
@@ -206,7 +203,7 @@ struct ContentView: View {
                             }
                         }
                         // Scroll to the top when a new item is added to the history
-                        .onChange(of: searchHistory.count) { _ in
+                        .onChange(of: searchHistory.count) { _, _ in
                             if !searchHistory.isEmpty {
                                 proxy.scrollTo(0, anchor: .top)
                             }
@@ -260,7 +257,7 @@ struct ContentView: View {
 
     /**
      Performs a search based on the `searchText` against employee names and IDs.
-     
+    
      This function filters the main `records` array and updates the `searchHistory`
      with the found records, placing the most recent at the top. The first result
      is automatically selected.
@@ -295,7 +292,7 @@ struct ContentView: View {
 
     /**
      Handles the selection of an employee from the suggestion list.
-     
+    
      This function updates the UI, assigns a sequential `checkInID` if one doesn't exist,
      marks all relatives as checked in, and updates the search history.
      - Parameter record: The `Employee` record that was selected.
@@ -363,7 +360,7 @@ struct ContentView: View {
 
     /**
      Handles the result of a file import operation from the `.fileImporter`.
-     
+    
      It retrieves the URL of the selected CSV file, ensures secure access to it,
      and triggers the `CSVParser` to import the data into the database.
      - Parameter result: A `Result` containing either an array of URLs or an error.
