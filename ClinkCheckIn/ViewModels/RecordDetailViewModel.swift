@@ -19,7 +19,7 @@ class RecordDetailViewModel {
     var selfRelative: Binding<[Relative]> {
         Binding(
             get: {
-                self.record.relatives.filter { $0.name == "本人" }
+                self.record.relatives.filter { $0.name == Relative.selfName }
             },
             set: { _ in } // Changes are handled directly on the objects
         )
@@ -29,7 +29,7 @@ class RecordDetailViewModel {
         Binding(
             get: {
                 self.record.relatives
-                    .filter { $0.name != "本人" }
+                    .filter { $0.name != Relative.selfName }
                     .sorted { $0.name < $1.name }
             },
             set: { _ in } // Changes are handled directly on the objects

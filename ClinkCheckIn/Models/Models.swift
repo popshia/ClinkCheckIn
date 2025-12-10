@@ -30,6 +30,10 @@ final class Relative {
     }
 }
 
+extension Relative {
+    static let selfName = "本人"
+}
+
 /// Represents an employee record in the check-in system.
 @Model
 final class Employee {
@@ -70,5 +74,10 @@ final class Employee {
         self.name = name
         self.relatives = relatives
         self.count = count
+    }
+
+    /// Checks if the "本人" (self) relative is checked in.
+    var isSelfCheckedIn: Bool {
+        relatives.first(where: { $0.name == Relative.selfName })?.checkIn == true
     }
 }

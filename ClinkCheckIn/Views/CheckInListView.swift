@@ -30,7 +30,7 @@ struct CheckInListView: View {
             HStack {
                 // Display the names of all relatives, excluding "本人" (self).
                 ForEach(
-                    record.relatives.filter { $0.name != "本人" }.sorted {
+                    record.relatives.filter { $0.name != Relative.selfName }.sorted {
                         $0.name < $1.name
                     }
                 ) { relative in

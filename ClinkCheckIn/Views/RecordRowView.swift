@@ -24,8 +24,7 @@ struct RecordRowView: View {
     var body: some View {
         HStack {
             let listText =
-                record.relatives.first(where: { $0.name == "本人" })?.checkIn == true
-                ? "✔︎ \(record.name)" : "\(record.name)"
+                record.isSelfCheckedIn ? "✔︎ \(record.name)" : "\(record.name)"
             Text(listText)
                 .font(.system(size: 20))
                 .padding(4)
