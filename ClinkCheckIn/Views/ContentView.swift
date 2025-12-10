@@ -284,7 +284,7 @@ struct ContentView: View {
         let match = String(text[range])
         let suffix = String(text[range.upperBound...])
 
-        return Text(prefix) + Text(match).bold() + Text(suffix)
+        return Text("\(prefix)\(Text(match).bold())\(suffix)")
     }
 }
 
