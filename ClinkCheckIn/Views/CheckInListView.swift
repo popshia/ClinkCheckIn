@@ -7,6 +7,7 @@
 //  This file defines the view for a single row in the check-in history list,
 //  displaying the employee's check-in ID, name, and their relatives.
 //
+
 import SwiftUI
 
 /// A view that displays a single row for an employee in the check-in history list.

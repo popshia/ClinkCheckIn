@@ -49,7 +49,6 @@ final class Employee {
     /// Unique identifier for the employee, typically an employee ID number.
     @Attribute(.unique)
     var id: String
-
     /// The name of the employee.
     var name: String
     /// A list of relatives associated with the employee.

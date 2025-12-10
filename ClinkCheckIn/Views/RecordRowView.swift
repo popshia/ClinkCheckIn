@@ -7,6 +7,7 @@
 //  This file defines the view for a single row in the main employee list.
 //  It displays the employee's name and changes color based on check-in status.
 //
+
 import SwiftUI
 
 /// A view that displays a single row for an employee record in the list.
