@@ -24,26 +24,14 @@ struct ContentView: View {
     /// A query to fetch all employee records from the database, kept up-to-date automatically.
     @Query private var records: [Employee]
 
+    // MARK: - ViewModel
+
+    @State private var viewModel = ContentViewModel()
+
     // MARK: - State Properties
 
-    /// The text entered by the user in the search bar.
-    @State private var searchText = ""
-    /// A boolean to control the visibility of the search suggestion dropdown.
-    @State private var showSuggestions = false
-    /// The index of the currently highlighted suggestion in the search results.
-    @State private var highlightedIndex: Int = 0
     /// A focus state to manage whether the search text field is active.
     @FocusState private var isSearchFieldFocused: Bool
-    /// The results of the most recent employee search.
-    @State private var searchResults: [Employee] = []
-    /// A boolean indicating whether the file importer sheet is currently presented.
-    @State private var isImporting = false
-    /// A boolean indicating whether the confirmation alert for clearing data is presented.
-    @State private var showingClearConfirmation = false
-    /// The currently selected employee record, which drives the detail view.
-    @State private var selectedRecord: Employee?
-    /// A history of employees who have been checked in.
-    @State private var searchHistory: [Employee] = []
 
     // MARK: - Computed Properties
 
@@ -64,12 +52,12 @@ struct ContentView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         ForEach(sortedRecords) { record in
                             Button {
-                                selectedRecord = record
+                                viewModel.selectedRecord = record
                                 // searchHistory.insert(record, at: 0)
                             } label: {
                                 RecordRowView(
                                     record: record,
-                                    isSelected: selectedRecord == record
+                                    isSelected: viewModel.selectedRecord == record
                                 )
                                 .contentShape(Rectangle())
                             }
@@ -89,53 +77,60 @@ struct ContentView: View {
                 VStack {
                     ZStack(alignment: .top) {
                         // Search text field
-                        TextField("輸入員工編號或員工姓名進行查詢", text: $searchText)
+                        TextField("輸入員工編號或員工姓名進行查詢", text: $viewModel.searchText)
                             .font(.system(size: 24))
                             .textFieldStyle(.roundedBorder)
                             .frame(maxWidth: 400)
                             .focused($isSearchFieldFocused)
-                            .onChange(of: searchText) { _, _ in
-                                highlightedIndex = 0 // Reset highlight when text changes
+                            .onChange(of: viewModel.searchText) { _, _ in
+                                viewModel.highlightedIndex = 0 // Reset highlight when text changes
                             }
                             .onSubmit {
-                                let suggestions = filteredSuggestions()
+                                let suggestions = viewModel.filteredSuggestions(from: records)
                                 guard !suggestions.isEmpty else { return }
-                                let selected = suggestions[highlightedIndex]
-                                selectSuggestion(selected)
+                                let selected = suggestions[viewModel.highlightedIndex]
+                                viewModel.selectSuggestion(selected, allRecords: records)
                                 isSearchFieldFocused = false
                             }
                             // Handle up/down arrow key presses to navigate suggestions
                             .onMoveCommand { direction in
-                                let suggestions = filteredSuggestions()
+                                let suggestions = viewModel.filteredSuggestions(from: records)
                                 guard !suggestions.isEmpty else { return }
 
                                 switch direction {
                                 case .down:
-                                    highlightedIndex = min(
-                                        highlightedIndex + 1, suggestions.count - 1)
+                                    viewModel.highlightedIndex = min(
+                                        viewModel.highlightedIndex + 1, suggestions.count - 1)
                                 case .up:
-                                    highlightedIndex = max(highlightedIndex - 1, 0)
+                                    viewModel.highlightedIndex = max(
+                                        viewModel.highlightedIndex - 1, 0)
                                 default:
                                     break
                                 }
                             }
 
                         // Search suggestions dropdown
-                        if isSearchFieldFocused && !filteredSuggestions().isEmpty {
+                        if isSearchFieldFocused
+                            && !viewModel.filteredSuggestions(from: records).isEmpty
+                        {
                             ScrollViewReader { proxy in
                                 ScrollView {
                                     VStack(spacing: 0) {
                                         ForEach(
-                                            Array(filteredSuggestions().enumerated()),
+                                            Array(
+                                                viewModel.filteredSuggestions(from: records)
+                                                    .enumerated()),
                                             id: \.element.id
                                         ) { index, record in
                                             Button {
-                                                selectSuggestion(record)
+                                                viewModel.selectSuggestion(
+                                                    record, allRecords: records)
                                                 isSearchFieldFocused = false
                                             } label: {
                                                 suggestionRow(
                                                     record: record,
-                                                    isHighlighted: index == highlightedIndex
+                                                    isHighlighted: index
+                                                        == viewModel.highlightedIndex
                                                 )
                                             }
                                             .id(index)
@@ -144,7 +139,7 @@ struct ContentView: View {
                                     }
                                 }
                                 // Auto-scroll to the highlighted suggestion
-                                .onChange(of: highlightedIndex) { _, newValue in
+                                .onChange(of: viewModel.highlightedIndex) { _, newValue in
                                     withAnimation(.easeOut(duration: 0.15)) {
                                         proxy.scrollTo(newValue, anchor: .center)
                                     }
@@ -162,22 +157,22 @@ struct ContentView: View {
                 }
 
                 // Display the detail view for the selected record
-                if let record = selectedRecord {
+                if let record = viewModel.selectedRecord {
                     RecordDetailView(record: record)
-                } else if !searchResults.isEmpty {
-                    RecordDetailView(record: searchResults[0])
+                } else if !viewModel.searchResults.isEmpty {
+                    RecordDetailView(record: viewModel.searchResults[0])
                 }
                 Spacer()
             }
             .onDisappear {
-                showSuggestions = false
+                viewModel.showSuggestions = false
             }
             .padding()
             .frame(minWidth: 400)
         } detail: {
             // MARK: Detail (Check-in History)
             VStack(alignment: .leading) {
-                if searchHistory.isEmpty {
+                if viewModel.searchHistory.isEmpty {
                     VStack {
                         Text("無報到紀錄")
                             .font(.system(size: 32))
@@ -187,14 +182,14 @@ struct ContentView: View {
                 } else {
                     ScrollViewReader { proxy in
                         List {
-                            ForEach(Array(searchHistory.enumerated()), id: \.element.id) {
+                            ForEach(Array(viewModel.searchHistory.enumerated()), id: \.element.id) {
                                 index, record in
                                 Button {
-                                    selectedRecord = record
+                                    viewModel.selectedRecord = record
                                 } label: {
                                     CheckInListView(
                                         record: record,
-                                        isSelected: selectedRecord == record
+                                        isSelected: viewModel.selectedRecord == record
                                     )
                                     .contentShape(Rectangle())
                                 }
@@ -203,8 +198,8 @@ struct ContentView: View {
                             }
                         }
                         // Scroll to the top when a new item is added to the history
-                        .onChange(of: searchHistory.count) { _, _ in
-                            if !searchHistory.isEmpty {
+                        .onChange(of: viewModel.searchHistory.count) { _, _ in
+                            if !viewModel.searchHistory.isEmpty {
                                 proxy.scrollTo(0, anchor: .top)
                             }
                         }
@@ -217,7 +212,7 @@ struct ContentView: View {
             // Toolbar items for clearing data and importing a CSV file.
             ToolbarItem(placement: .automatic) {
                 Button(role: .destructive) {
-                    showingClearConfirmation = true
+                    viewModel.showingClearConfirmation = true
                 } label: {
                     Image(systemName: "trash")
                         .foregroundStyle(records.isEmpty ? .gray : .red)
@@ -227,7 +222,7 @@ struct ContentView: View {
             }
             ToolbarItem(placement: .automatic) {
                 Button {
-                    isImporting = true
+                    viewModel.isImporting = true
                 } label: {
                     Image(systemName: "square.and.arrow.down")
                 }
@@ -235,16 +230,16 @@ struct ContentView: View {
             }
         }
         .fileImporter(
-            isPresented: $isImporting,
+            isPresented: $viewModel.isImporting,
             allowedContentTypes: [.commaSeparatedText],
             allowsMultipleSelection: false
         ) { result in
-            handleFileImport(result: result)
+            viewModel.handleFileImport(result: result, modelContext: modelContext)
         }
-        .alert("Clear All Data", isPresented: $showingClearConfirmation) {
+        .alert("Clear All Data", isPresented: $viewModel.showingClearConfirmation) {
             Button("Cancel", role: .cancel) {}
             Button("Delete All", role: .destructive) {
-                clearAllData()
+                viewModel.clearAllData(records: records, modelContext: modelContext)
             }
         } message: {
             Text(
@@ -254,72 +249,6 @@ struct ContentView: View {
     }
 
     // MARK: - Helper Functions
-
-    /**
-     Performs a search based on the `searchText` against employee names and IDs.
-    
-     This function filters the main `records` array and updates the `searchHistory`
-     with the found records, placing the most recent at the top. The first result
-     is automatically selected.
-     */
-    private func performSearch() {
-        let filteredRecords = records.filter { record in
-            record.id.contains(searchText) || record.name.contains(searchText)
-        }
-
-        // Add unique found records to search history, putting the most recent at the top.
-        for record in filteredRecords {
-            if let index = searchHistory.firstIndex(where: { $0.id == record.id }) {
-                searchHistory.remove(at: index) // Remove if already exists to re-add at top.
-            }
-            searchHistory.insert(record, at: 0)
-        }
-
-        selectedRecord = filteredRecords.first
-    }
-
-    /**
-     Filters the available records to generate a list of search suggestions.
-     - Returns: An array of `Employee` records that match the current `searchText`.
-     */
-    private func filteredSuggestions() -> [Employee] {
-        guard !searchText.isEmpty else { return [] }
-        return records.filter {
-            $0.id.localizedCaseInsensitiveContains(searchText)
-                || $0.name.localizedCaseInsensitiveContains(searchText)
-        }
-    }
-
-    /**
-     Handles the selection of an employee from the suggestion list.
-    
-     This function updates the UI, assigns a sequential `checkInID` if one doesn't exist,
-     marks all relatives as checked in, and updates the search history.
-     - Parameter record: The `Employee` record that was selected.
-     */
-    private func selectSuggestion(_ record: Employee) {
-        searchText = record.name
-        selectedRecord = record
-        showSuggestions = false
-
-        // Assign a sequential check-in ID if the employee doesn't have one yet.
-        if record.checkInID == nil {
-            let maxID = records.compactMap { $0.checkInID }.max() ?? 0
-            print(maxID)
-            record.checkInID = maxID + 1
-        }
-
-        // Mark all relatives as checked in for the selected employee.
-        for relative in record.relatives {
-            relative.checkIn = true
-        }
-
-        // Ensure the selected record is at the top of the search history.
-        if let index = searchHistory.firstIndex(where: { $0.id == record.id }) {
-            searchHistory.remove(at: index)
-        }
-        searchHistory.insert(record, at: 0)
-    }
 
     /**
      Builds a single suggestion row view.
@@ -345,8 +274,8 @@ struct ContentView: View {
      - Returns: A `Text` view with the `searchText` portion bolded.
      */
     private func highlightedText(text: String) -> Text {
-        guard !searchText.isEmpty,
-            let range = text.lowercased().range(of: searchText.lowercased())
+        guard !viewModel.searchText.isEmpty,
+            let range = text.lowercased().range(of: viewModel.searchText.lowercased())
         else {
             return Text(text)
         }
@@ -356,53 +285,6 @@ struct ContentView: View {
         let suffix = String(text[range.upperBound...])
 
         return Text(prefix) + Text(match).bold() + Text(suffix)
-    }
-
-    /**
-     Handles the result of a file import operation from the `.fileImporter`.
-    
-     It retrieves the URL of the selected CSV file, ensures secure access to it,
-     and triggers the `CSVParser` to import the data into the database.
-     - Parameter result: A `Result` containing either an array of URLs or an error.
-     */
-    private func handleFileImport(result: Result<[URL], Error>) {
-        do {
-            guard let url = try result.get().first else { return }
-
-            // Gain secure access to the file chosen by the user.
-            guard url.startAccessingSecurityScopedResource() else {
-                print("Failed to access file")
-                return
-            }
-
-            defer { url.stopAccessingSecurityScopedResource() }
-
-            try CSVParser.importToDatabase(url: url, database: modelContext)
-
-            print("Successfully imported CSV data")
-
-        } catch {
-            print("Error importing CSV: \(error.localizedDescription)")
-        }
-    }
-
-    /// Clears all employee and related data from the SwiftData database.
-    private func clearAllData() {
-        // Delete all records from the database.
-        for record in records {
-            modelContext.delete(record)
-        }
-
-        do {
-            try modelContext.save()
-            // Clear local state variables as well.
-            searchResults = []
-            searchText = ""
-            searchHistory = []
-            print("Successfully cleared all data")
-        } catch {
-            print("Error clearing data: \(error.localizedDescription)")
-        }
     }
 }
 

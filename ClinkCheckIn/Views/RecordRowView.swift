@@ -23,13 +23,10 @@ struct RecordRowView: View {
 
     var body: some View {
         HStack {
-            Text(record.name)
-                .foregroundStyle(
-                    // The text color turns green if the "本人" (self) relative is checked in.
-                    (record.relatives.first(where: { $0.name == "本人" })?.checkIn == true)
-                        ? .green
-                        : .primary
-                )
+            let listText =
+                record.relatives.first(where: { $0.name == "本人" })?.checkIn == true
+                ? "✔︎ \(record.name)" : "\(record.name)"
+            Text(listText)
                 .font(.system(size: 20))
                 .padding(4)
             Spacer()
