@@ -85,5 +85,4 @@ final class Employee {
     var isSelfCheckedIn: Bool {
         relatives.filter { $0.name == Relative.selfName }.allSatisfy { $0.checkIn == true }
     }
-    
 }
