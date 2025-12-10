@@ -83,6 +83,7 @@ final class Employee {
 
     /// Checks if the "本人" (self) relative is checked in.
     var isSelfCheckedIn: Bool {
-        relatives.first(where: { $0.name == Relative.selfName })?.checkIn == true
+        relatives.filter { $0.name == Relative.selfName }.allSatisfy { $0.checkIn == true }
     }
+    
 }
