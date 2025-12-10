@@ -12,6 +12,8 @@ import SwiftUI
 class RecordDetailViewModel {
     var record: Employee
 
+    /// Initializes the view model with a specific employee record.
+    /// - Parameter record: The employee record to display in the detail view.
     init(record: Employee) {
         self.record = record
     }
@@ -36,7 +38,8 @@ class RecordDetailViewModel {
         )
     }
 
-    // Helper to get bindings for relatives for the Toggle
+    /// Returns a binding for a specific relative's check-in status.
+    /// - Parameter relative: The relative to get the binding for.
     func binding(for relative: Relative) -> Binding<Bool> {
         Binding(
             get: { relative.checkIn },

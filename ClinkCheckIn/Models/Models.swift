@@ -24,6 +24,12 @@ final class Relative {
 
     // MARK: - Initializer
 
+    /**
+     Initializes a new relative record.
+     - Parameters:
+        - name: The name of the relative.
+        - checkIn: A boolean flag indicating whether the relative has checked in. Defaults to false.
+     */
     init(name: String, checkIn: Bool = false) {
         self.name = name
         self.checkIn = checkIn

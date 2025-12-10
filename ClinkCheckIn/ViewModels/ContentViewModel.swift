@@ -26,6 +26,8 @@ class ContentViewModel {
 
     // MARK: - Actions
 
+    /// Performs a search based on the current search text.
+    /// - Parameter records: The array of employee records to search through.
     func performSearch(records: [Employee]) {
         let filteredRecords = records.filter { record in
             record.id.contains(searchText) || record.name.contains(searchText)
@@ -42,6 +44,8 @@ class ContentViewModel {
         selectedRecord = filteredRecords.first
     }
 
+    /// Filters suggestions based on the current search text.
+    /// - Parameter records: The array of employee records to filter through.
     func filteredSuggestions(from records: [Employee]) -> [Employee] {
         guard !searchText.isEmpty else { return [] }
         return records.filter {
@@ -50,6 +54,10 @@ class ContentViewModel {
         }
     }
 
+    /// Selects a suggestion from the search results.
+    /// - Parameters:
+    ///   - record: The employee record to select.
+    ///   - allRecords: All employee records in the database.
     func selectSuggestion(_ record: Employee, allRecords: [Employee]) {
         searchText = "\(record.id) \(record.name)"
         selectedRecord = record
@@ -74,6 +82,10 @@ class ContentViewModel {
         searchHistory.insert(record, at: 0)
     }
 
+    /// Handles file import from the user's file system.
+    /// - Parameters:
+    ///   - result: The result of the file import operation.
+    ///   - modelContext: The model context for SwiftData operations.
     func handleFileImport(result: Result<[URL], Error>, modelContext: ModelContext) {
         do {
             guard let url = try result.get().first else { return }
@@ -95,6 +107,10 @@ class ContentViewModel {
         }
     }
 
+    /// Clears all data from the database.
+    /// - Parameters:
+    ///   - records: The array of employee records to clear.
+    ///   - modelContext: The model context for SwiftData operations.
     func clearAllData(records: [Employee], modelContext: ModelContext) {
         // Delete all records from the database.
         for record in records {
