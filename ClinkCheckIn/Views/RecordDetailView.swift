@@ -34,7 +34,6 @@ struct RecordDetailView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Divider()
             Text("參加人資訊")
                 .font(.title)
                 .fontWeight(.semibold)
@@ -42,27 +41,39 @@ struct RecordDetailView: View {
             DetailRow(label: "員工名稱", value: viewModel.record.name)
             DetailRow(label: "總參加人數", value: String(viewModel.record.count))
 
+            Divider()
+
             // Section for displaying relatives and their check-in status.
             VStack(alignment: .leading, spacing: 4) {
                 Text("攜帶親屬")
                     .font(.title3)
                     .foregroundStyle(.secondary)
-                if viewModel.record.relatives.isEmpty {
+
+                let relatives = viewModel.record.relatives
+                let selfRelatives = relatives.filter { $0.name == Relative.selfName }
+                let otherRelatives = relatives.filter { $0.name != Relative.selfName }.sorted {
+                    $0.name < $1.name
+                }
+
+                if relatives.isEmpty {
                     Text("無")
                         .font(.title2)
                 } else {
                     // Display the "本人" toggle first if they exist in the relatives list.
-                    ForEach(viewModel.selfRelative) { $selves in
-                        Toggle(isOn: $selves.checkIn) {
-                            Text($selves.name.wrappedValue)
+                    ForEach(selfRelatives) { relative in
+                        // Use a binding to the relative object directly
+                        @Bindable var relative = relative
+                        Toggle(isOn: $relative.checkIn) {
+                            Text(relative.name)
                                 .font(.title2)
                         }
                     }
 
                     // Display toggles for all other relatives.
-                    ForEach(viewModel.otherRelatives) { $relative in
+                    ForEach(otherRelatives) { relative in
+                        @Bindable var relative = relative
                         Toggle(isOn: $relative.checkIn) {
-                            Text($relative.name.wrappedValue)
+                            Text(relative.name)
                                 .font(.title2)
                         }
                     }
@@ -70,6 +81,13 @@ struct RecordDetailView: View {
             }
         }
         .padding()
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(.white.opacity(0.3), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
         .frame(
             maxWidth: .infinity,
             maxHeight: .infinity,

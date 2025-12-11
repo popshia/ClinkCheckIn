@@ -31,7 +31,22 @@ struct RecordRowView: View {
                 .padding(4)
             Spacer()
         }
-        .background(isSelected ? Color.gray.opacity(0.2) : Color.clear)
-        .cornerRadius(5)
+        .padding(.vertical, 2)
+        .padding(.horizontal, 8)
+        .background(
+            ZStack {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(.ultraThinMaterial)
+                        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(.white.opacity(0.3), lineWidth: 1)
+                        )
+                }
+            }
+        )
+        // Ensure text color is readable on the material background
+        .foregroundStyle(isSelected ? .primary : .secondary)
     }
 }

@@ -15,12 +15,13 @@ struct CheckInHistoryView: View {
         VStack(alignment: .leading) {
             if viewModel.searchHistory.isEmpty {
                 VStack {
-                    Image(systemName: "clock")
-                        .font(.system(size: 32))
-                        .foregroundStyle(.secondary)
-                    Text("無報到紀錄")
-                        .font(.system(size: 32))
-                        .foregroundStyle(.secondary)
+                    Group {
+                        Image(systemName: "clock.badge.questionmark.fill")
+                            .padding(.bottom, 8)
+                        Text("無同仁報到紀錄")
+                    }
+                    .font(.system(size: 32))
+                    .foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -41,6 +42,8 @@ struct CheckInHistoryView: View {
                             .id(index) // Assign unique ID for scrolling
                         }
                     }
+                    .scrollContentBackground(.hidden)
+                    .background(.clear)
                     // Scroll to the top when a new item is added to the history
                     .onChange(of: viewModel.searchHistory.count) { _, _ in
                         if !viewModel.searchHistory.isEmpty {

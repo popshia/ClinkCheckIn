@@ -22,7 +22,15 @@ struct MainContentAreaView: View {
                     // Search text field
                     TextField("輸入員工編號或員工姓名進行查詢", text: $viewModel.searchText)
                         .font(.system(size: 24))
-                        .textFieldStyle(.roundedBorder)
+                        .textFieldStyle(.plain)
+                        .padding(12)
+                        .background(.ultraThinMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(.white.opacity(0.3), lineWidth: 1)
+                        )
+                        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
                         .frame(maxWidth: 400)
                         .focused($isSearchFieldFocused)
                         .onChange(of: viewModel.searchText) { _, _ in
@@ -90,6 +98,10 @@ struct MainContentAreaView: View {
                             .frame(maxHeight: 240)
                             .background(.ultraThinMaterial)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(.white.opacity(0.3), lineWidth: 1)
+                            )
                             .shadow(radius: 6)
                             .frame(maxWidth: 400)
                             .offset(y: 52)
