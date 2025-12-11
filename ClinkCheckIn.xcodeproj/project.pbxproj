@@ -6,8 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		0CBAA9192EEAA6E400176124 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0C08F3022ED5517C00DE5EB0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0C08F3092ED5517C00DE5EB0;
+			remoteInfo = ClinkCheckIn;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		0C08F30A2ED5517C00DE5EB0 /* ClinkCheckIn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClinkCheckIn.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0CBAA9152EEAA6E400176124 /* ClinkCheckInTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClinkCheckInTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -16,10 +27,22 @@
 			path = ClinkCheckIn;
 			sourceTree = "<group>";
 		};
+		0CBAA9162EEAA6E400176124 /* ClinkCheckInTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ClinkCheckInTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		0C08F3072ED5517C00DE5EB0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0CBAA9122EEAA6E400176124 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -33,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				0C08F30C2ED5517C00DE5EB0 /* ClinkCheckIn */,
+				0CBAA9162EEAA6E400176124 /* ClinkCheckInTests */,
 				0C08F30B2ED5517C00DE5EB0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				0C08F30A2ED5517C00DE5EB0 /* ClinkCheckIn.app */,
+				0CBAA9152EEAA6E400176124 /* ClinkCheckInTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -70,6 +95,29 @@
 			productReference = 0C08F30A2ED5517C00DE5EB0 /* ClinkCheckIn.app */;
 			productType = "com.apple.product-type.application";
 		};
+		0CBAA9142EEAA6E400176124 /* ClinkCheckInTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0CBAA91D2EEAA6E400176124 /* Build configuration list for PBXNativeTarget "ClinkCheckInTests" */;
+			buildPhases = (
+				0CBAA9112EEAA6E400176124 /* Sources */,
+				0CBAA9122EEAA6E400176124 /* Frameworks */,
+				0CBAA9132EEAA6E400176124 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0CBAA91A2EEAA6E400176124 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0CBAA9162EEAA6E400176124 /* ClinkCheckInTests */,
+			);
+			name = ClinkCheckInTests;
+			packageProductDependencies = (
+			);
+			productName = ClinkCheckInTests;
+			productReference = 0CBAA9152EEAA6E400176124 /* ClinkCheckInTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -82,6 +130,10 @@
 				TargetAttributes = {
 					0C08F3092ED5517C00DE5EB0 = {
 						CreatedOnToolsVersion = 26.1.1;
+					};
+					0CBAA9142EEAA6E400176124 = {
+						CreatedOnToolsVersion = 26.1.1;
+						TestTargetID = 0C08F3092ED5517C00DE5EB0;
 					};
 				};
 			};
@@ -100,12 +152,20 @@
 			projectRoot = "";
 			targets = (
 				0C08F3092ED5517C00DE5EB0 /* ClinkCheckIn */,
+				0CBAA9142EEAA6E400176124 /* ClinkCheckInTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		0C08F3082ED5517C00DE5EB0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0CBAA9132EEAA6E400176124 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +182,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0CBAA9112EEAA6E400176124 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0CBAA91A2EEAA6E400176124 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0C08F3092ED5517C00DE5EB0 /* ClinkCheckIn */;
+			targetProxy = 0CBAA9192EEAA6E400176124 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0C08F3132ED5517E00DE5EB0 /* Debug */ = {
@@ -303,6 +378,44 @@
 			};
 			name = Release;
 		};
+		0CBAA91B2EEAA6E400176124 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Noah.ClinkCheckInTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClinkCheckIn.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ClinkCheckIn";
+			};
+			name = Debug;
+		};
+		0CBAA91C2EEAA6E400176124 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Noah.ClinkCheckInTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClinkCheckIn.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ClinkCheckIn";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -320,6 +433,15 @@
 			buildConfigurations = (
 				0C08F3162ED5517E00DE5EB0 /* Debug */,
 				0C08F3172ED5517E00DE5EB0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0CBAA91D2EEAA6E400176124 /* Build configuration list for PBXNativeTarget "ClinkCheckInTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0CBAA91B2EEAA6E400176124 /* Debug */,
+				0CBAA91C2EEAA6E400176124 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
