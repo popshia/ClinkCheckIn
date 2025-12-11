@@ -24,12 +24,10 @@ final class Relative {
 
     // MARK: - Initializer
 
-    /**
-     Initializes a new relative record.
-     - Parameters:
-        - name: The name of the relative.
-        - checkIn: A boolean flag indicating whether the relative has checked in. Defaults to false.
-     */
+    /// Initializes a new relative record.
+    /// - Parameters:
+    ///    - name: The name of the relative.
+    ///    - checkIn: A boolean flag indicating whether the relative has checked in. Defaults to false.
     init(name: String, checkIn: Bool = false) {
         self.name = name
         self.checkIn = checkIn
@@ -61,14 +59,12 @@ final class Employee {
 
     // MARK: - Initializer
 
-    /**
-     Initializes a new employee record.
-     - Parameters:
-        - id: The unique identifier for the employee.
-        - name: The name of the employee.
-        - relatives: A list of relatives associated with the employee. Defaults to an empty array.
-        - count: A count associated with the employee.
-     */
+    /// Initializes a new employee record.
+    /// - Parameters:
+    ///    - id: The unique identifier for the employee.
+    ///    - name: The name of the employee.
+    ///    - relatives: A list of relatives associated with the employee. Defaults to an empty array.
+    ///    - count: A count associated with the employee.
     init(
         id: String,
         name: String,

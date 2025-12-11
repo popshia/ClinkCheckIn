@@ -16,12 +16,10 @@ class CSVParser {
 
     // MARK: - Static Functions
 
-    /**
-     Parses a CSV file from a given URL into a two-dimensional array of strings.
-     - Parameter url: The URL of the CSV file to parse.
-     - Throws: An error if the file content cannot be read.
-     - Returns: An array of arrays, where each inner array represents a row in the CSV file.
-     */
+    /// Parses a CSV file from a given URL into a two-dimensional array of strings.
+    /// - Parameter url: The URL of the CSV file to parse.
+    /// - Throws: An error if the file content cannot be read.
+    /// - Returns: An array of arrays, where each inner array represents a row in the CSV file.
     static func parse(url: URL) throws -> [[String]] {
         let content = try String(contentsOf: url, encoding: .utf8)
         let rows = content.components(separatedBy: .newlines)
@@ -35,17 +33,14 @@ class CSVParser {
         return result
     }
 
-    /**
-     Imports employee data from a CSV file into the SwiftData database.
-    
-     This function parses a CSV file and iterates over its rows to create new `Employee` records
-     or update existing ones. It handles duplicates by checking for existing employee IDs and
-     appends new relatives to existing records.
-     - Parameters:
-        - url: The URL of the CSV file to import.
-        - database: The `ModelContext` used for database operations.
-     - Throws: An error if the file cannot be parsed or if there's an issue with database operations.
-     */
+    /// Imports employee data from a CSV file into the SwiftData database.
+    /// This function parses a CSV file and iterates over its rows to create new `Employee` records
+    /// or update existing ones. It handles duplicates by checking for existing employee IDs and
+    /// appends new relatives to existing records.
+    /// - Parameters:
+    ///    - url: The URL of the CSV file to import.
+    ///    - database: The `ModelContext` used for database operations.
+    /// - Throws: An error if the file cannot be parsed or if there's an issue with database operations.
     static func importToDatabase(url: URL, database: ModelContext) throws {
         let data = try parse(url: url)
 

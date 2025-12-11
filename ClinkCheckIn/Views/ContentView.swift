@@ -250,13 +250,11 @@ struct ContentView: View {
 
     // MARK: - Helper Functions
 
-    /**
-     Builds a single suggestion row view.
-     - Parameters:
-        - record: The `Employee` record to display in the row.
-        - isHighlighted: A boolean indicating if the row is currently highlighted.
-     - Returns: A view representing the suggestion row.
-     */
+    /// Builds a single suggestion row view.
+    /// - Parameters:
+    ///   - record: The `Employee` record to display in the row.
+    ///   - isHighlighted: A boolean indicating if the row is currently highlighted.
+    /// - Returns: A view representing the suggestion row.
     @ViewBuilder
     private func suggestionRow(record: Employee, isHighlighted: Bool) -> some View {
         HStack {
@@ -268,11 +266,9 @@ struct ContentView: View {
         .background(isHighlighted ? Color.accentColor.opacity(0.15) : Color.clear)
     }
 
-    /**
-     Generates a `Text` view with the search term highlighted in bold.
-     - Parameter text: The string to be displayed.
-     - Returns: A `Text` view with the `searchText` portion bolded.
-     */
+    /// Generates a `Text` view with the search term highlighted in bold.
+    /// - Parameter text: The string to be displayed.
+    /// - Returns: A `Text` view with the `searchText` portion bolded.
     private func highlightedText(text: String) -> Text {
         guard !viewModel.searchText.isEmpty,
             let range = text.lowercased().range(of: viewModel.searchText.lowercased())
