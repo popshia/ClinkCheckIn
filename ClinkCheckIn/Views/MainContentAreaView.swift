@@ -103,8 +103,10 @@ struct MainContentAreaView: View {
                 // Display the detail view for the selected record
                 if let record = viewModel.selectedRecord {
                     RecordDetailView(record: record)
+                        .padding()
                 } else if !viewModel.searchResults.isEmpty {
                     RecordDetailView(record: viewModel.searchResults[0])
+                        .padding()
                 }
                 Spacer()
             }
@@ -114,6 +116,9 @@ struct MainContentAreaView: View {
             .padding()
             .frame(minWidth: 400)
         }
+        .animation(.default, value: isSearchFieldFocused)
+        .animation(.default, value: viewModel.selectedRecord)
+        .animation(.default, value: viewModel.searchText.isEmpty)
     }
 
     // MARK: - Helper Functions
