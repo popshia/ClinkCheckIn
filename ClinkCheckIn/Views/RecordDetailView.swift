@@ -83,13 +83,7 @@ struct RecordDetailView: View {
             }
         }
         .padding()
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(.white.opacity(0.3), lineWidth: 1)
-        )
-        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+        .glassEffect(.regular, in: .rect(cornerRadius: 16))
         .frame(
             maxWidth: .infinity,
             maxHeight: .infinity,

@@ -13,29 +13,31 @@ struct EmployeeListView: View {
     @Bindable var viewModel: ContentViewModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("總參加人數: \(records.count)")
-                .font(.system(size: 14))
-            ScrollView {
-                VStack(alignment: .leading, spacing: 4) {
-                    ForEach(records) { record in
-                        Button {
-                            viewModel.selectedRecord = record
-                        } label: {
-                            RecordRowView(
-                                record: record,
-                                isSelected: viewModel.selectedRecord == record
-                            )
-                            .contentShape(Rectangle())
+        GlassEffectContainer {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("總參加人數: \(records.count)")
+                    .font(.system(size: 14))
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(records) { record in
+                            Button {
+                                viewModel.selectedRecord = record
+                            } label: {
+                                RecordRowView(
+                                    record: record,
+                                    isSelected: viewModel.selectedRecord == record
+                                )
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity)
             }
-            .frame(maxWidth: .infinity)
+            .padding()
+            .frame(minWidth: 200)
         }
-        .padding()
-        .frame(minWidth: 200)
     }
 }

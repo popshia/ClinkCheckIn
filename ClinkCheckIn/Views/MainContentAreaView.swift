@@ -15,115 +15,105 @@ struct MainContentAreaView: View {
     @FocusState private var isSearchFieldFocused: Bool
 
     var body: some View {
-        VStack(spacing: 40) {
-            Spacer()
-            VStack {
-                ZStack(alignment: .top) {
-                    // Search text field
-                    TextField("輸入員工編號或員工姓名進行查詢", text: $viewModel.searchText)
-                        .font(.system(size: 24))
-                        .textFieldStyle(.plain)
-                        .padding(12)
-                        .background(.ultraThinMaterial)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(.white.opacity(0.3), lineWidth: 1)
-                        )
-                        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
-                        .frame(maxWidth: 400)
-                        .focused($isSearchFieldFocused)
-                        .onChange(of: viewModel.searchText) { _, _ in
-                            viewModel.highlightedIndex = 0 // Reset highlight when text changes
-                        }
-                        .onSubmit {
-                            let suggestions = viewModel.filteredSuggestions(from: records)
-                            guard !suggestions.isEmpty else { return }
-                            let selected = suggestions[viewModel.highlightedIndex]
-                            viewModel.selectSuggestion(selected, allRecords: records)
-                            isSearchFieldFocused = false
-                        }
-                        // Handle up/down arrow key presses to navigate suggestions
-                        .onMoveCommand { direction in
-                            let suggestions = viewModel.filteredSuggestions(from: records)
-                            guard !suggestions.isEmpty else { return }
-
-                            switch direction {
-                            case .down:
-                                viewModel.highlightedIndex = min(
-                                    viewModel.highlightedIndex + 1, suggestions.count - 1)
-                            case .up:
-                                viewModel.highlightedIndex = max(
-                                    viewModel.highlightedIndex - 1, 0)
-                            default:
-                                break
+        GlassEffectContainer {
+            VStack(spacing: 40) {
+                Spacer()
+                VStack {
+                    ZStack(alignment: .top) {
+                        // Search text field
+                        TextField("輸入員工編號或員工姓名進行查詢", text: $viewModel.searchText)
+                            .font(.system(size: 24))
+                            .textFieldStyle(.plain)
+                            .padding(12)
+                            .glassEffect(.regular)
+                            .frame(maxWidth: 400)
+                            .focused($isSearchFieldFocused)
+                            .onChange(of: viewModel.searchText) { _, _ in
+                                viewModel.highlightedIndex = 0 // Reset highlight when text changes
                             }
-                        }
+                            .onSubmit {
+                                let suggestions = viewModel.filteredSuggestions(from: records)
+                                guard !suggestions.isEmpty else { return }
+                                let selected = suggestions[viewModel.highlightedIndex]
+                                viewModel.selectSuggestion(selected, allRecords: records)
+                                isSearchFieldFocused = false
+                            }
+                            // Handle up/down arrow key presses to navigate suggestions
+                            .onMoveCommand { direction in
+                                let suggestions = viewModel.filteredSuggestions(from: records)
+                                guard !suggestions.isEmpty else { return }
 
-                    // Search suggestions dropdown
-                    if isSearchFieldFocused
-                        && !viewModel.filteredSuggestions(from: records).isEmpty
-                    {
-                        ScrollViewReader { proxy in
-                            ScrollView {
-                                VStack(spacing: 0) {
-                                    ForEach(
-                                        Array(
-                                            viewModel.filteredSuggestions(from: records)
-                                                .enumerated()),
-                                        id: \.element.id
-                                    ) { index, record in
-                                        Button {
-                                            viewModel.selectSuggestion(
-                                                record, allRecords: records)
-                                            isSearchFieldFocused = false
-                                        } label: {
-                                            suggestionRow(
-                                                record: record,
-                                                isHighlighted: index
-                                                    == viewModel.highlightedIndex
-                                            )
+                                switch direction {
+                                case .down:
+                                    viewModel.highlightedIndex = min(
+                                        viewModel.highlightedIndex + 1, suggestions.count - 1)
+                                case .up:
+                                    viewModel.highlightedIndex = max(
+                                        viewModel.highlightedIndex - 1, 0)
+                                default:
+                                    break
+                                }
+                            }
+
+                        // Search suggestions dropdown
+                        if isSearchFieldFocused
+                            && !viewModel.filteredSuggestions(from: records).isEmpty
+                        {
+                            ScrollViewReader { proxy in
+                                ScrollView {
+                                    VStack(spacing: 0) {
+                                        ForEach(
+                                            Array(
+                                                viewModel.filteredSuggestions(from: records)
+                                                    .enumerated()),
+                                            id: \.element.id
+                                        ) { index, record in
+                                            Button {
+                                                viewModel.selectSuggestion(
+                                                    record, allRecords: records)
+                                                isSearchFieldFocused = false
+                                            } label: {
+                                                suggestionRow(
+                                                    record: record,
+                                                    isHighlighted: index
+                                                        == viewModel.highlightedIndex
+                                                )
+                                            }
+                                            .id(index)
+                                            .buttonStyle(.plain)
                                         }
-                                        .id(index)
-                                        .buttonStyle(.plain)
                                     }
                                 }
-                            }
-                            // Auto-scroll to the highlighted suggestion
-                            .onChange(of: viewModel.highlightedIndex) { _, newValue in
-                                withAnimation(.easeOut(duration: 0.15)) {
-                                    proxy.scrollTo(newValue, anchor: .center)
+                                // Auto-scroll to the highlighted suggestion
+                                .onChange(of: viewModel.highlightedIndex) { _, newValue in
+                                    withAnimation(.easeOut(duration: 0.15)) {
+                                        proxy.scrollTo(newValue, anchor: .center)
+                                    }
                                 }
+                                .frame(maxHeight: 240)
+                                .glassEffect(.regular, in: .rect(cornerRadius: 16))
+                                .frame(maxWidth: 400)
+                                .offset(y: 52)
                             }
-                            .frame(maxHeight: 240)
-                            .background(.ultraThinMaterial)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(.white.opacity(0.3), lineWidth: 1)
-                            )
-                            .shadow(radius: 6)
-                            .frame(maxWidth: 400)
-                            .offset(y: 52)
                         }
                     }
+                    .padding()
                 }
-                .padding()
-            }
 
-            // Display the detail view for the selected record
-            if let record = viewModel.selectedRecord {
-                RecordDetailView(record: record)
-            } else if !viewModel.searchResults.isEmpty {
-                RecordDetailView(record: viewModel.searchResults[0])
+                // Display the detail view for the selected record
+                if let record = viewModel.selectedRecord {
+                    RecordDetailView(record: record)
+                } else if !viewModel.searchResults.isEmpty {
+                    RecordDetailView(record: viewModel.searchResults[0])
+                }
+                Spacer()
             }
-            Spacer()
+            .onDisappear {
+                viewModel.showSuggestions = false
+            }
+            .padding()
+            .frame(minWidth: 400)
         }
-        .onDisappear {
-            viewModel.showSuggestions = false
-        }
-        .padding()
-        .frame(minWidth: 400)
     }
 
     // MARK: - Helper Functions
@@ -138,6 +128,7 @@ struct MainContentAreaView: View {
         }
         .padding(8)
         .background(isHighlighted ? Color.accentColor.opacity(0.15) : Color.clear)
+        .clipShape(.rect(cornerRadius: 16))
     }
 
     /// Generates a `Text` view with the search term highlighted in bold.

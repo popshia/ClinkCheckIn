@@ -23,7 +23,7 @@ struct CheckInListView: View {
     // MARK: - View Body
 
     var body: some View {
-        VStack(alignment: .leading) {
+        let content = VStack(alignment: .leading) {
             // Display the check-in ID and the employee's name prominently.
             Text("\(record.checkInID ?? 0) \(record.name)")
                 .font(.system(size: 72).bold())
@@ -45,20 +45,15 @@ struct CheckInListView: View {
         .frame(maxWidth: .infinity, alignment: .leading) // Ensure the view takes full available width
         .padding(.vertical, 6)
         .padding(.horizontal, 8)
-        .background(
-            ZStack {
-                if isSelected {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(.ultraThinMaterial)
-                        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(.white.opacity(0.3), lineWidth: 1)
-                        )
-                }
-            }
-        )
-        // Ensure text color is readable on the material background
-        .foregroundStyle(isSelected ? .primary : .secondary)
+
+        if isSelected {
+            content
+                .glassEffect(.regular, in: .rect(cornerRadius: 16))
+                .foregroundStyle(.primary)
+        } else {
+            content
+                .glassEffect(.regular, in: .rect(cornerRadius: 16))
+                .foregroundStyle(.secondary)
+        }
     }
 }
