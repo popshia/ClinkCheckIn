@@ -15,7 +15,7 @@ struct MainContentAreaView: View {
     @FocusState private var isSearchFieldFocused: Bool
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 40) {
             Spacer()
             VStack {
                 ZStack(alignment: .top) {
