@@ -67,6 +67,7 @@ struct RecordDetailView: View {
                             Text(relative.name)
                                 .font(.title2)
                         }
+                        .padding(.vertical, 2)
                     }
 
                     // Display toggles for all other relatives.
@@ -76,6 +77,7 @@ struct RecordDetailView: View {
                             Text(relative.name)
                                 .font(.title2)
                         }
+                        .padding(.vertical, 2)
                     }
                 }
             }
