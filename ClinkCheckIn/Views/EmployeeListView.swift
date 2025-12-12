@@ -15,7 +15,7 @@ struct EmployeeListView: View {
     var body: some View {
         GlassEffectContainer {
             VStack(alignment: .leading, spacing: 12) {
-                Text("總參加人數: \(records.count)")
+                Text("總人數: \(records.count)")
                     .font(.system(size: 14))
                 ScrollView {
                     VStack(alignment: .leading, spacing: 4) {

@@ -34,12 +34,12 @@ struct RecordDetailView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("參加人資訊")
+            Text("出席資訊")
                 .font(.title)
                 .fontWeight(.semibold)
             DetailRow(label: "員工編號", value: viewModel.record.id)
-            DetailRow(label: "員工名稱", value: viewModel.record.name)
-            DetailRow(label: "總參加人數", value: String(viewModel.record.count))
+            DetailRow(label: "名字", value: viewModel.record.name)
+            DetailRow(label: "出席人數", value: String(viewModel.record.count))
 
             Divider()
 
