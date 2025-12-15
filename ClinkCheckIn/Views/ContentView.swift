@@ -62,6 +62,15 @@ struct ContentView: View {
             }
             ToolbarItem(placement: .automatic) {
                 Button {
+                    viewModel.showingResetConfirmation = true
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .disabled(records.isEmpty)
+                .buttonStyle(.automatic)
+            }
+            ToolbarItem(placement: .automatic) {
+                Button {
                     viewModel.isImporting = true
                 } label: {
                     Image(systemName: "square.and.arrow.down")
@@ -75,6 +84,16 @@ struct ContentView: View {
             allowsMultipleSelection: false
         ) { result in
             viewModel.handleFileImport(result: result, modelContext: modelContext)
+        }
+        .alert("Reset Check In Status", isPresented: $viewModel.showingResetConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Reset", role: .destructive) {
+                viewModel.resetAllData(records: records, modelContext: modelContext)
+            }
+        } message: {
+            Text(
+                "Are you sure you want to reset all check-in statuses? This action cannot be undone."
+            )
         }
         .alert("Clear All Data", isPresented: $viewModel.showingClearConfirmation) {
             Button("Cancel", role: .cancel) {}

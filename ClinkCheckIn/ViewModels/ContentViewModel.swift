@@ -20,6 +20,7 @@ class ContentViewModel {
     var searchResults: [Employee] = []
     var isImporting = false
     var showingClearConfirmation = false
+    var showingResetConfirmation = false
     var selectedRecord: Employee?
     var searchHistory: [Employee] = []
     var isSearchFieldFocused = false
@@ -126,6 +127,31 @@ class ContentViewModel {
             print("Successfully cleared all data")
         } catch {
             print("Error clearing data: \(error.localizedDescription)")
+        }
+    }
+
+    /// Resets all data from the database.
+    /// - Parameters:
+    ///   - records: The array of employee records to reset.
+    ///   - modelContext: The model context for SwiftData operations.
+    func resetAllData(records: [Employee], modelContext: ModelContext) {
+        // Delete all records from the database.
+        for record in records {
+            record.checkInID = nil
+            for relative in record.relatives {
+                relative.checkIn = false
+            }
+        }
+
+        do {
+            try modelContext.save()
+            // Clear local state variables as well.
+            searchResults = []
+            searchText = ""
+            searchHistory = []
+            print("Successfully reset all data")
+        } catch {
+            print("Error resetting data: \(error.localizedDescription)")
         }
     }
 }
