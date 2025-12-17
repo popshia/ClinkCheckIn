@@ -81,6 +81,21 @@ struct RecordDetailView: View {
                     }
                 }
             }
+
+            Divider()
+
+            Text("備註")
+                .font(.title3)
+                .foregroundStyle(.secondary)
+            TextEditor(text: $viewModel.record.note)
+                .font(.title2)
+                .scrollContentBackground(.hidden) // Hides default TextEditor background
+                .padding(8) // Internal padding for text
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.secondary.opacity(0.4), lineWidth: 1) // Proper rounded border
+                )
+                .frame(maxHeight: 100)
         }
         .padding()
         .glassEffect(.regular, in: .rect(cornerRadius: 16))

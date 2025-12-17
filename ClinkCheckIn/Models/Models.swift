@@ -56,6 +56,8 @@ final class Employee {
     var count: Int
     /// A sequential ID assigned when the employee is checked in, starting from 1.
     var checkInID: Int?
+    /// A note associated with the employee, potentially representing additional information about the employee.
+    var note: String = ""
 
     // MARK: - Initializer
 
