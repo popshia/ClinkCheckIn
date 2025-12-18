@@ -37,7 +37,7 @@ struct EmployeeListView: View {
                 .frame(maxWidth: .infinity)
             }
             .padding()
-            .frame(minWidth: 200)
+            .frame(minWidth: 100)
         }
     }
 }
