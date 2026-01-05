@@ -49,6 +49,8 @@ final class Employee {
     var id: String
     /// The name of the employee.
     var name: String
+    /// The department of the employee.
+    var department: String
     /// A list of relatives associated with the employee.
     @Relationship(deleteRule: .cascade)
     var relatives: [Relative]
@@ -58,6 +60,8 @@ final class Employee {
     var checkInID: Int?
     /// A note associated with the employee, potentially representing additional information about the employee.
     var note: String = ""
+    /// A boolean flag indicating whether the employee has a playing card.
+    var hasPlayingCard: String
 
     // MARK: - Initializer
 
@@ -71,12 +75,16 @@ final class Employee {
         id: String,
         name: String,
         relatives: [Relative] = [],
-        count: Int
+        count: Int,
+        department: String,
+        hasPlayingCard: String
     ) {
         self.id = id
         self.name = name
         self.relatives = relatives
         self.count = count
+        self.department = department
+        self.hasPlayingCard = hasPlayingCard
     }
 
     /// Checks if the "本人" (self) relative is checked in.

@@ -31,7 +31,9 @@ class ContentViewModel {
     /// - Parameter records: The array of employee records to search through.
     func performSearch(records: [Employee]) {
         let filteredRecords = records.filter { record in
-            record.id.contains(searchText) || record.name.contains(searchText)
+            record.id.localizedCaseInsensitiveContains(searchText)
+                || record.name.localizedCaseInsensitiveContains(searchText)
+                || record.department.localizedCaseInsensitiveContains(searchText)
         }
 
         // Add unique found records to search history, putting the most recent at the top.
@@ -52,6 +54,7 @@ class ContentViewModel {
         return records.filter {
             $0.id.localizedCaseInsensitiveContains(searchText)
                 || $0.name.localizedCaseInsensitiveContains(searchText)
+                || $0.department.localizedCaseInsensitiveContains(searchText)
         }
     }
 

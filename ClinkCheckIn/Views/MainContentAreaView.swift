@@ -127,7 +127,7 @@ struct MainContentAreaView: View {
     @ViewBuilder
     private func suggestionRow(record: Employee, isHighlighted: Bool) -> some View {
         HStack {
-            highlightedText(text: "\(record.id) • \(record.name)")
+            highlightedText(text: "\(record.department) - \(record.id) • \(record.name)")
                 .font(.system(size: 18))
             Spacer()
         }

@@ -38,8 +38,12 @@ struct RecordDetailView: View {
                 .font(.title)
                 .fontWeight(.semibold)
             DetailRow(label: "員工編號", value: viewModel.record.id)
+            DetailRow(label: "部門", value: viewModel.record.department)
             DetailRow(label: "名字", value: viewModel.record.name)
             DetailRow(label: "出席人數", value: String(viewModel.record.count))
+            if viewModel.record.hasPlayingCard == "Y" {
+                DetailRow(label: "總經理獎遊戲卡", value: viewModel.record.hasPlayingCard)
+            }
 
             Divider()
 
