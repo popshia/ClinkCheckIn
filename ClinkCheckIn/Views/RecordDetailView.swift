@@ -23,26 +23,79 @@ struct RecordDetailView: View {
     /// The view model that manages the logic for this view.
     @State private var viewModel: RecordDetailViewModel
 
+    /// The share content view model.
+    var contentViewModel: ContentViewModel
+
+    /// A query to fetch all employee records, used for calculating max ID.
+    @Query private var allRecords: [Employee]
+
     // MARK: - Initializer
 
-    init(record: Employee) {
+    init(record: Employee, contentViewModel: ContentViewModel) {
         self.record = record
+        self.contentViewModel = contentViewModel
         _viewModel = State(initialValue: RecordDetailViewModel(record: record))
     }
 
     // MARK: - View Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 16) {
             Text("出席資訊")
                 .font(.title)
                 .fontWeight(.semibold)
-            DetailRow(label: "員工編號", value: viewModel.record.id)
-            DetailRow(label: "部門", value: viewModel.record.department)
-            DetailRow(label: "名字", value: viewModel.record.name)
-            DetailRow(label: "出席人數", value: String(viewModel.record.count))
-            if viewModel.record.hasPlayingCard == "Y" {
-                DetailRow(label: "總經理獎遊戲卡", value: viewModel.record.hasPlayingCard)
+            HStack(alignment: .top, spacing: 40) {
+                VStack(alignment: .leading, spacing: 8) {
+                    DetailRow(label: "員工編號", value: viewModel.record.id)
+                    DetailRow(label: "部門", value: viewModel.record.department)
+                    DetailRow(label: "名字", value: viewModel.record.name)
+                    DetailRow(label: "出席人數", value: String(viewModel.record.count))
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    let updateStatus = { (status: String) in
+                        viewModel.record.checkInStatus = status
+                        contentViewModel.searchHistory.removeAll { $0.id == record.id }
+                        if status == "未報到" {
+                            for relative in viewModel.record.relatives {
+                                relative.checkIn = false
+                            }
+                        } else {
+                            if status == "已報到" {
+                                for relative in viewModel.record.relatives {
+                                    relative.checkIn = true
+                                }
+                            }
+                            // Assign a sequential check-in ID if the employee doesn't have one yet.
+                            if record.checkInID == nil {
+                                let maxID = allRecords.compactMap { $0.checkInID }.max() ?? 0
+                                record.checkInID = maxID + 1
+                            }
+                            contentViewModel.searchHistory.insert(record, at: 0)
+                        }
+                    }
+
+                    Text("簽到狀態")
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                    Menu(viewModel.record.checkInStatus) {
+                        Button("未報到") {
+                            updateStatus("未報到")
+                        }
+                        Button("部分報到") {
+                            updateStatus("部分報到")
+                        }
+                        Button("已報到") {
+                            updateStatus("已報到")
+                        }
+                    }
+                    if viewModel.record.hasPlayingCard == "Y" {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("總經理獎遊戲卡")
+                                .font(.title)
+                                .foregroundStyle(.green)
+                        }
+                    }
+                }
             }
 
             Divider()
@@ -99,7 +152,7 @@ struct RecordDetailView: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.secondary.opacity(0.4), lineWidth: 1) // Proper rounded border
                 )
-                .frame(maxHeight: 100)
+                .frame(maxHeight: 40)
         }
         .padding()
         .glassEffect(.regular, in: .rect(cornerRadius: 16))

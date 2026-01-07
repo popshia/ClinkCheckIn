@@ -39,20 +39,23 @@ struct MainContentAreaView: View {
                                 isSearchFieldFocused = false
                             }
                             // Handle up/down arrow key presses to navigate suggestions
-                            .onMoveCommand { direction in
+                            .onKeyPress(.downArrow) {
                                 let suggestions = viewModel.filteredSuggestions(from: records)
-                                guard !suggestions.isEmpty else { return }
-
-                                switch direction {
-                                case .down:
-                                    viewModel.highlightedIndex = min(
-                                        viewModel.highlightedIndex + 1, suggestions.count - 1)
-                                case .up:
-                                    viewModel.highlightedIndex = max(
-                                        viewModel.highlightedIndex - 1, 0)
-                                default:
-                                    break
-                                }
+                                guard !suggestions.isEmpty else { return .ignored }
+                                viewModel.highlightedIndex = min(
+                                    viewModel.highlightedIndex + 1, suggestions.count - 1)
+                                return .handled
+                            }
+                            .onKeyPress(.upArrow) {
+                                let suggestions = viewModel.filteredSuggestions(from: records)
+                                guard !suggestions.isEmpty else { return .ignored }
+                                viewModel.highlightedIndex = max(
+                                    viewModel.highlightedIndex - 1, 0)
+                                return .handled
+                            }
+                            .onKeyPress(.escape) {
+                                isSearchFieldFocused = false
+                                return .handled
                             }
 
                         // Search suggestions dropdown
@@ -102,11 +105,13 @@ struct MainContentAreaView: View {
 
                 // Display the detail view for the selected record
                 if let record = viewModel.selectedRecord {
-                    RecordDetailView(record: record)
+                    RecordDetailView(record: record, contentViewModel: viewModel)
                         .padding()
                 } else if !viewModel.searchResults.isEmpty {
-                    RecordDetailView(record: viewModel.searchResults[0])
-                        .padding()
+                    RecordDetailView(
+                        record: viewModel.searchResults[0], contentViewModel: viewModel
+                    )
+                    .padding()
                 }
                 Spacer()
             }

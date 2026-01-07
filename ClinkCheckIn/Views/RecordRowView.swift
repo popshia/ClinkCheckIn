@@ -25,7 +25,11 @@ struct RecordRowView: View {
     var body: some View {
         let content = HStack {
             let listText =
-                record.isSelfCheckedIn ? "✔︎ \(record.name)" : "\(record.name)"
+                switch record.checkInStatus {
+                case "已報到": "✅ \(record.name)"
+                case "部分報到": "⚠️ \(record.name)"
+                default: "\(record.name)"
+                }
             Text(listText)
                 .font(.system(size: 20))
                 .padding(4)

@@ -62,6 +62,8 @@ final class Employee {
     var note: String = ""
     /// A boolean flag indicating whether the employee has a playing card.
     var hasPlayingCard: String
+    /// A state that represent employee check-in status.
+    var checkInStatus: String
 
     // MARK: - Initializer
 
@@ -71,13 +73,17 @@ final class Employee {
     ///    - name: The name of the employee.
     ///    - relatives: A list of relatives associated with the employee. Defaults to an empty array.
     ///    - count: A count associated with the employee.
+    ///    - department: The department of the employee.
+    ///    - hasPlayingCard: A boolean flag indicating whether the employee has a playing card.
+    ///    - checkInStatus: A state that represent employee check-in status.
     init(
         id: String,
         name: String,
         relatives: [Relative] = [],
         count: Int,
         department: String,
-        hasPlayingCard: String
+        hasPlayingCard: String,
+        checkInStatus: String
     ) {
         self.id = id
         self.name = name
@@ -85,10 +91,11 @@ final class Employee {
         self.count = count
         self.department = department
         self.hasPlayingCard = hasPlayingCard
+        self.checkInStatus = checkInStatus
     }
 
-    /// Checks if the "本人" (self) relative is checked in.
-    var isSelfCheckedIn: Bool {
-        relatives.filter { $0.name == Relative.selfName }.allSatisfy { $0.checkIn == true }
+    /// Checks if the employee is checked in.
+    var isCheckedIn: Bool {
+        relatives.allSatisfy { $0.checkIn == true }
     }
 }

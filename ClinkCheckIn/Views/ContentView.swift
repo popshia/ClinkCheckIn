@@ -30,17 +30,15 @@ struct ContentView: View {
 
     // MARK: - Computed Properties
 
-    /// A computed property that returns the employee records sorted alphabetically by name.
-    private var sortedRecords: [Employee] {
-        records.sorted { $0.name < $1.name }
-    }
-
     // MARK: - View Body
 
     var body: some View {
         NavigationSplitView {
             // MARK: Sidebar (List of all employees)
-            EmployeeListView(records: sortedRecords, viewModel: viewModel)
+            EmployeeListView(
+                records: viewModel.filteredAndSortedRecords(from: records),
+                viewModel: viewModel
+            )
         } content: {
             // MARK: Content (Search and Detail View)
             MainContentAreaView(viewModel: viewModel, records: records)

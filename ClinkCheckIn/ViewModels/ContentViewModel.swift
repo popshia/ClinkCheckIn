@@ -14,6 +14,19 @@ class ContentViewModel {
 
     // MARK: - Properties
 
+    // MARK: - Enums
+
+    enum CheckInFilter: String, CaseIterable, Identifiable {
+        case all = "所有"
+        case notCheckedIn = "未報到" // Updated to match user preference
+        case partiallyCheckedIn = "部分報到"
+        case checkedIn = "已報到"
+
+        var id: String { rawValue }
+    }
+
+    // MARK: - Properties
+
     var searchText = ""
     var showSuggestions = false
     var highlightedIndex: Int = 0
@@ -24,6 +37,7 @@ class ContentViewModel {
     var selectedRecord: Employee?
     var searchHistory: [Employee] = []
     var isSearchFieldFocused = false
+    var filterStatus: CheckInFilter = .all
 
     // MARK: - Actions
 
@@ -58,6 +72,22 @@ class ContentViewModel {
         }
     }
 
+    /// Filters and sorts employee records based on the current filter status.
+    /// - Parameter records: The array of employee records to process.
+    /// - Returns: An array of filtered and sorted employee records.
+    func filteredAndSortedRecords(from records: [Employee]) -> [Employee] {
+        let filteredRecords: [Employee]
+        switch filterStatus {
+        case .all:
+            filteredRecords = records
+        default:
+            filteredRecords = records.filter {
+                $0.checkInStatus == filterStatus.rawValue
+            }
+        }
+        return filteredRecords.sorted { $0.name < $1.name }
+    }
+
     /// Selects a suggestion from the search results.
     /// - Parameters:
     ///   - record: The employee record to select.
@@ -70,7 +100,6 @@ class ContentViewModel {
         // Assign a sequential check-in ID if the employee doesn't have one yet.
         if record.checkInID == nil {
             let maxID = allRecords.compactMap { $0.checkInID }.max() ?? 0
-            print(maxID)
             record.checkInID = maxID + 1
         }
 
@@ -78,12 +107,6 @@ class ContentViewModel {
         for relative in record.relatives {
             relative.checkIn = true
         }
-
-        // Ensure the selected record is at the top of the search history.
-        if let index = searchHistory.firstIndex(where: { $0.id == record.id }) {
-            searchHistory.remove(at: index)
-        }
-        searchHistory.insert(record, at: 0)
     }
 
     /// Handles file import from the user's file system.
@@ -141,6 +164,7 @@ class ContentViewModel {
         // Delete all records from the database.
         for record in records {
             record.checkInID = nil
+            record.checkInStatus = "未報到"
             for relative in record.relatives {
                 relative.checkIn = false
             }

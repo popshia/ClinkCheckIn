@@ -15,8 +15,32 @@ struct EmployeeListView: View {
     var body: some View {
         GlassEffectContainer {
             VStack(alignment: .leading, spacing: 12) {
-                Text("總人數: \(records.count)")
+                HStack {
+                    Text(
+                        viewModel.filterStatus == .all
+                            ? "已報到: \(records.filter { $0.checkInStatus == "已報到" || $0.checkInStatus == "部分報到" }.count) / \(records.count)"
+                            : "\(viewModel.filterStatus.rawValue): \(records.count)"
+                    )
                     .font(.system(size: 14))
+                    Spacer()
+                    Menu {
+                        ForEach(ContentViewModel.CheckInFilter.allCases) { filter in
+                            Button(filter.rawValue) {
+                                viewModel.filterStatus = filter
+                            }
+                        }
+                    } label: {
+                        Image(
+                            systemName: viewModel.filterStatus == .all
+                                ? "line.3.horizontal.decrease.circle"
+                                : "line.3.horizontal.decrease.circle.fill"
+                        )
+                        .foregroundStyle(
+                            viewModel.filterStatus == .all ? Color.secondary : Color.blue)
+                    }
+                    .menuStyle(.button)
+                    .buttonStyle(.plain)
+                }
                 ScrollView {
                     VStack(alignment: .leading, spacing: 4) {
                         ForEach(records) { record in

@@ -48,7 +48,7 @@ class CSVParser {
         let dataRows = data.dropFirst()
 
         for row in dataRows {
-            guard row.count >= 6 else { continue }
+            guard row.count == 7 else { continue }
 
             let id = row[3].trimmingCharacters(in: .whitespaces)
             let name = row[4].trimmingCharacters(in: .whitespaces)
@@ -84,7 +84,8 @@ class CSVParser {
                     relatives: initialRelatives,
                     count: count,
                     department: department,
-                    hasPlayingCard: hasPlayingCard
+                    hasPlayingCard: hasPlayingCard,
+                    checkInStatus: "未報到"
                 )
                 database.insert(newRecord)
             }
