@@ -31,7 +31,7 @@ class ContentViewModel {
     var showSuggestions = false
     var highlightedIndex: Int = 0
     var searchResults: [Employee] = []
-    var isImporting = false
+    var isExporting = false // For CSV Export
     var showingClearConfirmation = false
     var showingResetConfirmation = false
     var selectedRecord: Employee?
@@ -109,28 +109,20 @@ class ContentViewModel {
         }
     }
 
-    /// Handles file import from the user's file system.
-    /// - Parameters:
-    ///   - result: The result of the file import operation.
-    ///   - modelContext: The model context for SwiftData operations.
-    func handleFileImport(result: Result<[URL], Error>, modelContext: ModelContext) {
+    /// Imports the specific CSV file from the application bundle.
+    /// - Parameter modelContext: The model context for SwiftData operations.
+    func importFromBundleResource(modelContext: ModelContext) {
+        guard let url = Bundle.main.url(forResource: "參與", withExtension: "csv") else {
+            print("Failed to find '參與.csv' in bundle")
+            return
+        }
+
         do {
-            guard let url = try result.get().first else { return }
-
-            // Gain secure access to the file chosen by the user.
-            guard url.startAccessingSecurityScopedResource() else {
-                print("Failed to access file")
-                return
-            }
-
-            defer { url.stopAccessingSecurityScopedResource() }
-
             try CSVParser.importToDatabase(url: url, database: modelContext)
-
-            print("Successfully imported CSV data")
-
+            // Refresh logic if needed, though Query should handle it.
+            print("Successfully imported bundle CSV data")
         } catch {
-            print("Error importing CSV: \(error.localizedDescription)")
+            print("Error importing bundle CSV: \(error.localizedDescription)")
         }
     }
 

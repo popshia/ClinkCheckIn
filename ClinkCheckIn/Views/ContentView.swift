@@ -34,6 +34,8 @@ struct ContentView: View {
     // MARK: - View Body
 
     var body: some View {
+        @Bindable var viewModel = viewModel
+
         NavigationSplitView {
             // MARK: Sidebar (List of all employees)
             EmployeeListView(
@@ -70,19 +72,32 @@ struct ContentView: View {
             }
             ToolbarItem(placement: .automatic) {
                 Button {
-                    viewModel.isImporting = true
+                    viewModel.importFromBundleResource(modelContext: modelContext)
                 } label: {
                     Image(systemName: "square.and.arrow.down")
                 }
                 .buttonStyle(.automatic)
             }
+            ToolbarItem(placement: .automatic) {
+                Button {
+                    viewModel.isExporting = true
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .buttonStyle(.automatic)
+            }
         }
-        .fileImporter(
-            isPresented: $viewModel.isImporting,
-            allowedContentTypes: [.commaSeparatedText],
-            allowsMultipleSelection: false
+        .fileExporter(
+            isPresented: $viewModel.isExporting,
+            document: CSVDocument(initialText: CSVExporter.generateCSV(from: records)),
+            contentType: .commaSeparatedText,
+            defaultFilename: "尾牙報到紀錄.csv"
         ) { result in
-            viewModel.handleFileImport(result: result, modelContext: modelContext)
+            if case .failure(let error) = result {
+                print("Export failed: \(error.localizedDescription)")
+            } else {
+                print("Export successful")
+            }
         }
         .alert("Reset Check In Status", isPresented: $viewModel.showingResetConfirmation) {
             Button("Cancel", role: .cancel) {}
