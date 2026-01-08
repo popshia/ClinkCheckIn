@@ -12,7 +12,6 @@ import SwiftData
 import SwiftUI
 
 /// A view that displays the detailed information of a selected employee record.
-/// A view that displays the detailed information of a selected employee record.
 struct RecordDetailView: View {
 
     // MARK: - Properties
@@ -52,40 +51,23 @@ struct RecordDetailView: View {
                     DetailRow(label: "出席人數", value: String(viewModel.record.count))
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    let updateStatus = { (status: String) in
-                        viewModel.record.checkInStatus = status
-                        contentViewModel.searchHistory.removeAll { $0.id == record.id }
-                        if status == "未報到" {
-                            for relative in viewModel.record.relatives {
-                                relative.checkIn = false
-                            }
-                        } else {
-                            if status == "已報到" {
-                                for relative in viewModel.record.relatives {
-                                    relative.checkIn = true
-                                }
-                            }
-                            // Assign a sequential check-in ID if the employee doesn't have one yet.
-                            if record.checkInID == nil {
-                                let maxID = allRecords.compactMap { $0.checkInID }.max() ?? 0
-                                record.checkInID = maxID + 1
-                            }
-                            contentViewModel.searchHistory.insert(record, at: 0)
-                        }
-                    }
+                    // updateStatus closure removed, logic moved to ViewModel
 
                     Text("簽到狀態")
                         .font(.title3)
                         .foregroundStyle(.secondary)
                     Menu(viewModel.record.checkInStatus) {
                         Button("未報到") {
-                            updateStatus("未報到")
+                            viewModel.updateCheckInStatus(
+                                "未報到", allRecords: allRecords, contentViewModel: contentViewModel)
                         }
                         Button("部分報到") {
-                            updateStatus("部分報到")
+                            viewModel.updateCheckInStatus(
+                                "部分報到", allRecords: allRecords, contentViewModel: contentViewModel)
                         }
                         Button("已報到") {
-                            updateStatus("已報到")
+                            viewModel.updateCheckInStatus(
+                                "已報到", allRecords: allRecords, contentViewModel: contentViewModel)
                         }
                     }
                     if viewModel.record.hasPlayingCard == "Y" {
@@ -107,10 +89,8 @@ struct RecordDetailView: View {
                     .foregroundStyle(.secondary)
 
                 let relatives = viewModel.record.relatives
-                let selfRelatives = relatives.filter { $0.name == Relative.selfName }
-                let otherRelatives = relatives.filter { $0.name != Relative.selfName }.sorted {
-                    $0.name < $1.name
-                }
+                let selfRelatives = viewModel.selfRelative
+                let otherRelatives = viewModel.otherRelatives
 
                 if relatives.isEmpty {
                     Text("無")
@@ -118,7 +98,6 @@ struct RecordDetailView: View {
                 } else {
                     // Display the "本人" toggle first if they exist in the relatives list.
                     ForEach(selfRelatives) { relative in
-                        // Use a binding to the relative object directly
                         @Bindable var relative = relative
                         Toggle(isOn: $relative.checkIn) {
                             Text(relative.name)

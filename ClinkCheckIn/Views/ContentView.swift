@@ -8,6 +8,7 @@
 //  It features a three-pane layout using NavigationSplitView to display a list
 //  of all employees, a central search and detail area, and a check-in history.
 //
+// TODO: add export csv file.
 
 import SwiftData
 import SwiftUI
