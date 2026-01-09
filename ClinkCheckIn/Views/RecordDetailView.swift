@@ -70,6 +70,7 @@ struct RecordDetailView: View {
                                 "已報到", allRecords: allRecords, contentViewModel: contentViewModel)
                         }
                     }
+                    DetailRow(label: "桌號", value: String(viewModel.record.table))
                     if viewModel.record.hasPlayingCard == "Y" {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("總經理獎遊戲卡")

@@ -64,6 +64,8 @@ final class Employee {
     var hasPlayingCard: String
     /// A state that represent employee check-in status.
     var checkInStatus: String
+    /// A int represent employee table
+    var table: String
 
     // MARK: - Initializer
 
@@ -83,7 +85,8 @@ final class Employee {
         count: Int,
         department: String,
         hasPlayingCard: String,
-        checkInStatus: String
+        checkInStatus: String,
+        table: String
     ) {
         self.id = id
         self.name = name
@@ -92,6 +95,7 @@ final class Employee {
         self.department = department
         self.hasPlayingCard = hasPlayingCard
         self.checkInStatus = checkInStatus
+        self.table = table
     }
 
     /// Checks if the employee is checked in.

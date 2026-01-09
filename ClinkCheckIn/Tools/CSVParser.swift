@@ -48,7 +48,7 @@ class CSVParser {
         let dataRows = data.dropFirst()
 
         for row in dataRows {
-            guard row.count == 7 else { continue }
+            guard row.count == 8 else { continue }
 
             let id = row[3].trimmingCharacters(in: .whitespaces)
             let name = row[4].trimmingCharacters(in: .whitespaces)
@@ -56,6 +56,7 @@ class CSVParser {
             let count = Int(row[0].trimmingCharacters(in: .whitespaces)) ?? 1
             let department = row[5].trimmingCharacters(in: .whitespaces)
             let hasPlayingCard = row[6].trimmingCharacters(in: .whitespaces)
+            let table = row[7].trimmingCharacters(in: .whitespaces)
 
             // Create a fetch descriptor to find an existing employee with the same ID.
             let descriptor = FetchDescriptor<Employee>(
@@ -85,7 +86,8 @@ class CSVParser {
                     count: count,
                     department: department,
                     hasPlayingCard: hasPlayingCard,
-                    checkInStatus: "未報到"
+                    checkInStatus: "未報到",
+                    table: table
                 )
                 database.insert(newRecord)
             }
