@@ -16,7 +16,7 @@ class CSVExporter {
     /// - Parameter records: The array of records to export.
     /// - Returns: A CSV string with headers and data.
     static func generateCSV(from records: [Employee]) -> String {
-        var csvString = "CheckInStatus,CheckInId,ID,Name,Department,Relatives\n"
+        var csvString = "報到狀態,報到序號,員工編號,員工姓名,員工部門,已報到親屬,未報到親屬\n"
 
         for record in records {
             let row = [
@@ -25,7 +25,12 @@ class CSVExporter {
                 escape(record.id),
                 escape(record.name),
                 escape(record.department),
-                escape(record.relatives.map { $0.name }.joined(separator: ", ")),
+                escape(
+                    "\(record.relatives.filter { $0.checkIn }.map { $0.name }.joined(separator: ", "))"
+                ),
+                escape(
+                    "\(record.relatives.filter { !$0.checkIn }.map { $0.name }.joined(separator: ", "))"
+                ),
             ]
             csvString += row.joined(separator: ",") + "\n"
         }
