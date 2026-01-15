@@ -26,7 +26,7 @@ struct CheckInListView: View {
         let content = VStack(alignment: .leading) {
             // Display the check-in ID and the employee's name prominently.
             Text("\(record.checkInID ?? 0) \(record.name)")
-                .font(.system(size: 72).bold())
+                .font(.system(size: 96).bold())
                 .padding()
             HStack {
                 // Display the names of all relatives, excluding "本人" (self).
@@ -37,7 +37,7 @@ struct CheckInListView: View {
                         }
                 ) { relative in
                     Text(relative.name)
-                        .font(.system(size: 48))
+                        .font(.system(size: 64))
                         .padding(4)
                 }
             }
